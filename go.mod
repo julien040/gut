@@ -3,6 +3,7 @@ module github.com/julien040/gut
 go 1.19
 
 require (
+	github.com/briandowns/spinner v1.19.0
 	github.com/fatih/color v1.13.0
 	github.com/go-git/go-git/v5 v5.5.1
 	github.com/spf13/cobra v1.6.1
@@ -12,7 +13,6 @@ require (
 	github.com/Microsoft/go-winio v0.5.2 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20221026131551-cf6655e29de4 // indirect
 	github.com/acomagu/bufpipe v1.0.3 // indirect
-	github.com/briandowns/spinner v1.19.0 // indirect
 	github.com/cloudflare/circl v1.1.0 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/go-git/gcfg v1.5.0 // indirect

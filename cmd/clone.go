@@ -29,9 +29,12 @@ import (
 
 // cloneCmd represents the clone command
 var cloneCmd = &cobra.Command{
-	Use:     "clone",
+	Use:     "clone [url] [path]",
 	Short:   "Clone a repository from a remote",
 	Run:     controller.Clone,
+	Example: "gut clone https://github.com/julien040/gut.git my-project",
+	Args:    cobra.ExactArgs(2),
+
 	Aliases: []string{"cl", "clo", "clon", "down", "download", "get", "install"},
 }
 
