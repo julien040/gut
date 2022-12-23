@@ -7,6 +7,7 @@ package controller
 import (
 	"errors"
 	"fmt"
+	"io"
 	"net/url"
 	"os"
 
@@ -89,7 +90,7 @@ func checkIfPathExist(path string) bool {
 
 // Ask the user if he wants to create the path he entered
 func promptUserForMakingPath(path string) bool {
-	shouldCreate, err := prompt.InputBool("The path you entered doesn't exist. Do you want to create it? \n " + color.HiBlackString(path))
+	shouldCreate, err := prompt.InputBool("The path you entered doesn't exist. Do you want to create it? \n "+color.HiBlackString(path), true)
 	if err != nil {
 		exitOnError("For some reason, we couldn't get your input 😓", err)
 	}
@@ -116,4 +117,21 @@ func makeValidPath(originalPath string, repoName string) string {
 			return makeValidPath(askForPath(repoName, "Where do you want to clone the repo?"), repoName)
 		}
 	}
+}
+
+func isDirectoryEmpty(path string) (bool, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return false, err
+	}
+	defer f.Close()
+
+	_, err = f.Readdir(1)
+	if err == nil {
+		return false, nil
+	}
+	if err == io.EOF {
+		return true, nil
+	}
+	return false, err
 }

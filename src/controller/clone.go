@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/fatih/color"
 
@@ -42,6 +43,21 @@ func Clone(cmd *cobra.Command, args []string) {
 		path = args[1]
 	}
 	path = makeValidPath(path, repoName)
+
+	isEmpty, err := isDirectoryEmpty(path)
+	if err != nil {
+		exitOnError("We couldn't check if the directory is empty 😓", err)
+	}
+	if !isEmpty {
+		// If the directory is not empty, ask the user if he wants to continue
+		shouldContinue, err := prompt.InputBool("The directory is not empty. Do you want to continue? This will overwrite the existing files", true)
+		if err != nil {
+			exitOnError("For some reason, we couldn't get your input 😓", err)
+		}
+		if !shouldContinue {
+			os.Exit(0)
+		}
+	}
 
 	/* --------------------------------- Clone repo ------------------------------ */
 	fmt.Printf("\nYour repo is %s and will be cloned in %s", color.GreenString(repo), color.BlueString(path))
