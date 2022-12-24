@@ -33,7 +33,7 @@ var cloneCmd = &cobra.Command{
 	Short:   "Clone a repository from a remote",
 	Run:     controller.Clone,
 	Example: "gut clone https://github.com/julien040/gut.git my-project",
-	Args:    cobra.ExactArgs(2),
+	Args:    cobra.MaximumNArgs(2),
 
 	Aliases: []string{"cl", "clo", "clon", "down", "download", "get", "install"},
 }
