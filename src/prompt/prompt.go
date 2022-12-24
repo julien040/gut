@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/julien040/gut/src/print"
+	"github.com/manifoldco/promptui"
 )
 
 // InputLine prompts the user for an input and returns it
@@ -63,4 +64,14 @@ func InputBool(message string, defaultValue bool) (bool, error) {
 		return defaultValue, nil
 	}
 	return res == "y" || res == "Y", nil
+}
+
+// InputSelect prompts the user to select an option from a list
+func InputSelect(message string, options []string) (string, error) {
+	prompt := promptui.Select{
+		Label: message,
+		Items: options,
+	}
+	_, res, err := prompt.Run()
+	return res, err
 }
