@@ -22,3 +22,6 @@ main
 go.work
 
 test/
+
+# MacOS
+.DS_Store

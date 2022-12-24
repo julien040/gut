@@ -3,9 +3,14 @@ package controller
 import (
 	"fmt"
 	"os"
+	"time"
 
+	"github.com/briandowns/spinner"
 	"github.com/fatih/color"
+	"github.com/go-git/go-git/plumbing/transport"
 
+	"github.com/julien040/gut/src/executor"
+	"github.com/julien040/gut/src/print"
 	"github.com/julien040/gut/src/prompt"
 
 	"github.com/spf13/cobra"
@@ -59,19 +64,39 @@ func Clone(cmd *cobra.Command, args []string) {
 		}
 	}
 
+	shouldConserveGitHistory, err := prompt.InputBool("Do you want to also clone the git history?", true)
+	if err != nil {
+		exitOnError("For some reason, we couldn't get your input 😓", err)
+	}
+
 	/* --------------------------------- Clone repo ------------------------------ */
 	fmt.Printf("\nYour repo is %s and will be cloned in %s", color.GreenString(repo), color.BlueString(path))
-	/* s := spinner.New(spinner.CharSets[9], 100*time.Millisecond) // Build a new spinner
+	s := spinner.New(spinner.CharSets[9], 100*time.Millisecond) // Build a new spinner
 	s.Start()
-	err := executor.Clone(repo, path)
+	err = executor.Clone(repo, path, shouldConserveGitHistory)
 	s.Stop()
-	if err == transport.ErrAuthenticationRequired {
-		print.Message("We don't have the right credentials to clone the repo 😓. Please make sure you have the right permissions", print.Error)
-		os.Exit(1)
+	if err != nil {
+		if err.Error() == "authentication required" {
+			print.Message("Oh no, this repo requires authentication 😓. Please enter your credentials", print.Info)
+			cloneRepoNeedsAuth(repo, path, shouldConserveGitHistory)
+		} else {
+			exitOnError("Sorry but we couldn't clone the repo 😓", err)
+		}
+	} else {
+		print.Message("Your repo has been cloned successfully 🎉 at "+path, print.Success)
+	}
+
+}
+
+func cloneRepoNeedsAuth(repo string, path string, shouldConserveGitHistory bool) {
+	profile := selectProfile(repo, true)
+	err := executor.CloneWithAuth(repo, path, profile.Username, profile.Password, shouldConserveGitHistory)
+	if err == transport.ErrAuthorizationFailed {
+		print.Message("Uh oh, the credentials you entered are invalid. Please try again with a different profile 😉", print.Error)
+		cloneRepoNeedsAuth(repo, path, shouldConserveGitHistory)
 	} else if err != nil {
 		exitOnError("We couldn't clone the repo 😓. Please make sure you have the right permissions", err)
-	} */
-
-	// Todo: Add auth handler for private repos
-	// Todo: Add degit support
+	} else {
+		print.Message("Your repo has been cloned successfully 🎉 at "+path, print.Success)
+	}
 }
