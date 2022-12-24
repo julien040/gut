@@ -24,6 +24,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/julien040/gut/src/controller"
 	"github.com/spf13/cobra"
 )
 
@@ -32,18 +33,13 @@ var profileCmd = &cobra.Command{
 	Use:   "profile",
 	Short: "Manage your profiles",
 
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("profile called")
-	},
+	Run: controller.Profiles,
 }
 
 var profileAddCmd = &cobra.Command{
-	Use:   "add",
-	Short: "Add a new profile",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("profile add called")
-	},
-	Args:    cobra.ExactArgs(3),
+	Use:     "add",
+	Short:   "Add a new profile",
+	Run:     controller.ProfilesAdd,
 	Aliases: []string{"a", "new"},
 }
 
@@ -57,11 +53,9 @@ var profileRemoveCmd = &cobra.Command{
 }
 
 var profileListCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List all your profiles",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("profile list called")
-	},
+	Use:     "list",
+	Short:   "List all your profiles",
+	Run:     controller.ProfilesList,
 	Aliases: []string{"ls"},
 }
 

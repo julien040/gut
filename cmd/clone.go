@@ -51,5 +51,6 @@ func init() {
 	// is called directly, e.g.:
 	cloneCmd.Flags().BoolP("degit", "d", false, "Clone without git history")
 	cloneCmd.Flags().BoolP("verbose", "v", false, "Verbose mode (show git output)")
+	cloneCmd.Flags().String("profile", "default", "The alias of the profile to use")
 
 }

@@ -140,8 +140,8 @@ func saveFile() {
 	}
 }
 
-// Add a profile to the config file
-func AddProfile(profile Profile) {
+// Add a profile to the config file and return the id
+func AddProfile(profile Profile) string {
 	id, err := nanoid.New()
 	if err != nil {
 		exit(err, "We can't generate an id for the profile 😓")
@@ -166,6 +166,7 @@ func AddProfile(profile Profile) {
 		exit(err, "We can't save the profile in profiles.toml 😓")
 	}
 	saveFile()
+	return id
 }
 
 // Return the profiles array

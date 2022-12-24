@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"strings"
 
 	"path/filepath"
 
@@ -58,5 +59,18 @@ func makeValidPath(originalPath string, repoName string) string {
 		} else {
 			return makeValidPath(askForPath(repoName, "Where do you want to clone the repo?"), repoName)
 		}
+	}
+}
+
+func getHost(str string) string {
+	parsed, err := url.Parse(str)
+	if err != nil {
+		return ""
+	} else {
+		// If the URL has no scheme, Parse won't find the host
+		if parsed.Scheme == "" {
+			return strings.Split(str, "/")[0]
+		}
+		return parsed.Host
 	}
 }
