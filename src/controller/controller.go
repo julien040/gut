@@ -42,7 +42,9 @@ func getRepoNameFromURL(str string) string {
 		return ""
 	} else {
 		// Check if the URL has a scheme and a host
-		return filepath.Base(parsed.Path)
+		base := filepath.Base(parsed.Path)
+		// Remove the extension
+		return strings.TrimSuffix(base, filepath.Ext(base))
 	}
 }
 

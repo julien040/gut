@@ -48,6 +48,8 @@ func askForPath(repoName string, message string) string {
 }
 
 // Check if the path exists and return true if it does
+//
+// Path should be absolute
 func checkIfPathExist(path string) bool {
 	_, err := os.Stat(path)
 	return !errors.Is(err, os.ErrNotExist)
