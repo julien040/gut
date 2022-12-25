@@ -28,7 +28,7 @@ func askForProfileAlias() string {
 // Ask a profile username to the user
 func askForProfileUsername() string {
 	// Ask for the username
-	username, err := prompt.InputLine("Username: ")
+	username, err := prompt.InputLine("Login username: ")
 	if err != nil {
 		print.Message("We can't read your input 😓", print.Error)
 		return askForProfileUsername()
@@ -39,8 +39,9 @@ func askForProfileUsername() string {
 // Ask a profile password to the user
 func askForProfilePassword() string {
 	// Ask for the password
+	print.Message("Your password is saved in your keychain. We can't see it 😎", print.Info)
 	prompt := promptui.Prompt{
-		Label: "Password",
+		Label: "Password or token",
 		Mask:  '*',
 	}
 	password, err := prompt.Run()
@@ -54,17 +55,33 @@ func askForProfilePassword() string {
 func askForProfileWebsite(gitURL string) string {
 	gitURL = getHost(gitURL)
 	if gitURL == "" {
-		userInput, err1 := prompt.InputLine("Domain: ")
+		userInput, err1 := prompt.InputLine("Website: ")
 		parsedHost := getHost(userInput)
 		if err1 != nil || parsedHost == "" {
 			print.Message("We can't read your input 😓", print.Error)
 			return askForProfileWebsite("")
-		} else {
-			return parsedHost
+		} else if !isDomainValid(parsedHost) {
+			print.Message("We think this URL is not valid 😓. Please type it again", print.Error)
+			return askForProfileWebsite("")
 		}
+		return parsedHost
 
 	}
 	return gitURL
+}
+
+func askForProfileEmail() string {
+	// Ask for the email
+	email, err := prompt.InputLine("Email (for commit): ")
+	if err != nil {
+		print.Message("We can't read your input 😓", print.Error)
+		return askForProfileEmail()
+	} else if !isEmailValid(email) {
+		print.Message("We think this email is not valid 😓. Please type it again", print.Error)
+		return askForProfileEmail()
+	}
+	fmt.Println(email)
+	return email
 }
 
 func newProfile(url string) profile.Profile {
@@ -74,6 +91,7 @@ func newProfile(url string) profile.Profile {
 		Username: askForProfileUsername(),
 		Password: askForProfilePassword(),
 		Website:  askForProfileWebsite(url),
+		Email:    askForProfileEmail(),
 	}
 	// Save the profile
 	id := profile.AddProfile(newProfile)
@@ -118,6 +136,7 @@ func Profiles(cmd *cobra.Command, args []string) {
 	print.Message("Print info about the profiles \n", print.Info)
 	profileSelected := selectProfile("", true)
 	fmt.Printf(color.HiBlackString("Profile selected: %s \n"), color.HiBlueString(profileSelected.Alias))
+	fmt.Printf(color.HiBlackString("Email: %s \n"), color.HiBlueString(profileSelected.Email))
 	fmt.Printf(color.HiBlackString("Username: %s \n"), color.HiBlueString(profileSelected.Username))
 	fmt.Printf(color.HiBlackString("Website: %s \n"), color.HiBlueString(profileSelected.Website))
 	fmt.Printf(color.HiBlackString("Internal ID: %s \n"), color.HiBlueString(profileSelected.Id))
@@ -132,8 +151,14 @@ func ProfilesList(cmd *cobra.Command, args []string) {
 	// Get all the profiles
 	profiles := profile.GetProfiles()
 
-	fmt.Println(color.HiBlackString("ID | Alias | Username | Website"))
-	for key, val := range *profiles {
-		fmt.Printf(color.HiBlackString("%d. %s | %s | %s | %s"), key, val.Id, color.HiBlueString(val.Alias), color.HiBlueString(val.Username), color.HiBlueString(val.Website))
+	if len(*profiles) == 0 {
+		print.Message("You don't have any profile yet 😓 \nCreate one with gut profile add", print.Info)
+		return
+	} else {
+
+		fmt.Println(color.HiBlackString("ID | Alias | Username | Website | Email"))
+		for key, val := range *profiles {
+			fmt.Printf(color.HiBlackString("%d. %s | %s | %s | %s | %s \n"), key, val.Id, color.HiBlueString(val.Alias), color.HiBlueString(val.Username), color.HiBlueString(val.Website), color.HiBlueString(val.Email))
+		}
 	}
 }

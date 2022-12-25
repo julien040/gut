@@ -6,8 +6,10 @@ package controller
 
 import (
 	"fmt"
+	"net/mail"
 	"net/url"
 	"os"
+	"regexp"
 	"strings"
 
 	"path/filepath"
@@ -75,4 +77,18 @@ func getHost(str string) string {
 		}
 		return parsed.Host
 	}
+}
+
+func isEmailValid(email string) bool {
+	_, err := mail.ParseAddress(email)
+	return err == nil
+
+}
+
+func isDomainValid(domain string) bool {
+	// Regex from https://stackoverflow.com/questions/10306690/what-is-a-regular-expression-which-will-match-a-valid-domain-name-without-a-subd
+	// I have no idea how it works
+	reg := regexp.MustCompile(`^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$`)
+	return reg.MatchString(domain)
+
 }

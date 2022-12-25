@@ -19,12 +19,14 @@ type Profile struct {
 	Username string
 	Password string
 	Website  string
+	Email    string
 }
 
 type DiskProfile struct {
 	Alias    string
 	Website  string
 	Username string
+	Email    string
 }
 
 var configPath string
@@ -113,6 +115,11 @@ func init() {
 			print.Message("The profile "+key+" doesn't have a username, we will skip it", print.Warning)
 			continue
 		}
+		email, ok := val["Email"].(string)
+		if !ok {
+			print.Message("The profile "+key+" doesn't have an email, we will skip it", print.Warning)
+			continue
+		}
 
 		// Add profile to the profiles array
 		profiles = append(profiles, Profile{
@@ -121,6 +128,7 @@ func init() {
 			Username: username,
 			Password: string(password.Data),
 			Website:  website,
+			Email:    email,
 		})
 	}
 
@@ -151,6 +159,7 @@ func AddProfile(profile Profile) string {
 		Alias:    profile.Alias,
 		Website:  profile.Website,
 		Username: profile.Username,
+		Email:    profile.Email,
 	}
 	err = ring.Set(keyring.Item{
 		Key:  id,

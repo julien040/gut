@@ -128,3 +128,111 @@ func Test_getHost(t *testing.T) {
 		})
 	}
 }
+
+func Test_isEmailValid(t *testing.T) {
+	type args struct {
+		email string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "Valid email",
+			args: args{
+				email: "contact@acme.com",
+			},
+			want: true,
+		},
+		{
+			name: "Invalid email 1",
+			args: args{
+				email: "contact@acme",
+			},
+			want: true,
+		},
+		{
+			name: "Invalid email 2",
+			args: args{
+				email: "contactacme.com",
+			},
+			want: false,
+		},
+		{
+			name: "Invalid email 3",
+			args: args{
+				email: "@acme.com",
+			},
+			want: false,
+		},
+		{
+			name: "Empty email",
+			args: args{
+				email: "",
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := isEmailValid(tt.args.email); got != tt.want {
+				t.Errorf("isEmailValid() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_isDomainValid(t *testing.T) {
+	type args struct {
+		domain string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "Valid domain",
+			args: args{
+				domain: "acme.com",
+			},
+			want: true,
+		},
+		{
+			name: "Invalid domain",
+			args: args{
+				domain: "acme",
+			},
+			want: false,
+		},
+		{
+			name: "Invalid domain",
+			args: args{
+				domain: "acme.",
+			},
+			want: false,
+		},
+		{
+			name: "Invalid domain",
+			args: args{
+				domain: ".com",
+			},
+			want: false,
+		},
+		{
+			name: "Empty domain",
+			args: args{
+				domain: "",
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := isDomainValid(tt.args.domain); got != tt.want {
+				t.Errorf("isDomainValid() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
