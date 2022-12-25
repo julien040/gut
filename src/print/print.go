@@ -34,7 +34,7 @@ func Message(message string, color Color) {
 	case Warning:
 		printColor.Yellow(message)
 	case Info:
-		printColor.Blue(message)
+		printColor.Cyan(message)
 	case Success:
 		printColor.Green(message)
 	case None:
