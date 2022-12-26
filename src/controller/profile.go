@@ -10,6 +10,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/fatih/color"
+	"github.com/julien040/gut/src/executor"
 	"github.com/julien040/gut/src/print"
 	"github.com/julien040/gut/src/profile"
 	"github.com/julien040/gut/src/prompt"
@@ -168,9 +169,13 @@ func ProfilesList(cmd *cobra.Command, args []string) {
 		}
 	}
 }
-func associateProfileToPath(profileID string, path string) {
+func associateProfileToPath(profile profile.Profile, path string) {
+	// Set Profile Data in git config
+	executor.SetUserConfig(path, profile.Username, profile.Email)
+
 	// Get current date
 	currentDate := time.Now().Format("2006-01-02 15:04:05")
+
 	// Check if file exists
 	pathToWrite := filepath.Join(path, ".gut")
 	if _, err := os.Stat(pathToWrite); os.IsNotExist(err) {
@@ -181,33 +186,57 @@ func associateProfileToPath(profileID string, path string) {
 		}
 		f.Close()
 	}
+
 	// Open file in write mode
 	f, err := os.OpenFile(pathToWrite,
 		os.O_WRONLY|os.O_TRUNC, 0755)
 	if err != nil {
 		exitOnError("We can't open the file .gut at "+pathToWrite, err)
 	}
+
 	// Close file at the end of the function
 	defer f.Close()
 
 	// Create the schema
 	profileIDSchema := SchemaGutConf{
-		ProfileID: profileID,
+		ProfileID: profile.Id,
 		UpdatedAt: currentDate,
 	}
 
-	// Encode ID in TOML
+	// Encode ID in TOML and write it in .gut file
 	t := toml.NewEncoder(f)
 	err = t.Encode(profileIDSchema)
 	if err != nil {
 		exitOnError("We can't encode in TOML", err)
 	}
 
-	// Write profile id in the file
-	/* _, err = f.WriteString(profileID)
+}
+
+func getProfileIDFromPath(path string) string {
+	// Open file in read mode
+	f, err :=
+		os.OpenFile(filepath.Join(path, ".gut"),
+			os.O_RDONLY, 0755)
+
 	if err != nil {
-		exitOnError("We can't write in the file .gutconf at "+pathToWrite, err)
-	} */
+		defer f.Close()
+		return ""
+
+	} else {
+		defer f.Close()
+		// Close file at the end of the function
+
+		// Create the schema
+		profileIDSchema := SchemaGutConf{}
+
+		// Decode ID in TOML
+		t := toml.NewDecoder(f)
+		_, err = t.Decode(&profileIDSchema)
+		if err != nil {
+			exitOnError("We can't decode in TOML", err)
+		}
+		return profileIDSchema.ProfileID
+	}
 
 }
 

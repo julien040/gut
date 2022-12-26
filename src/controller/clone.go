@@ -98,6 +98,6 @@ func cloneRepoNeedsAuth(repo string, path string, shouldConserveGitHistory bool)
 		exitOnError("We couldn't clone the repo 😓. Please make sure you have the right permissions", err)
 	} else {
 		print.Message("Your repo has been cloned successfully 🎉 at "+path, print.Success)
-		associateProfileToPath(profile.Id, path)
+		associateProfileToPath(profile, path)
 	}
 }

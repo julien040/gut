@@ -22,7 +22,7 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"fmt"
+	"github.com/julien040/gut/src/controller"
 
 	"github.com/spf13/cobra"
 )
@@ -31,13 +31,14 @@ import (
 var saveCmd = &cobra.Command{
 	Use:   "save",
 	Short: "Save your current work locally",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("save called")
-	},
+	Run:   controller.Save,
 }
 
 func init() {
 	rootCmd.AddCommand(saveCmd)
+	saveCmd.Flags().StringP("message", "m", "", "The commit message")
+	saveCmd.Flags().StringP("profile", "p", "", "The ID of the profile to use")
+	saveCmd.Flags().StringP("title", "t", "", "The title of the commit")
 
 	// Here you will define your flags and configuration settings.
 

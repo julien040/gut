@@ -4,6 +4,8 @@ go 1.19
 
 require (
 	github.com/99designs/keyring v1.2.2
+	github.com/AlecAivazis/survey/v2 v2.3.6
+	github.com/BurntSushi/toml v1.2.1
 	github.com/briandowns/spinner v1.20.0
 	github.com/fatih/color v1.13.0
 	github.com/go-git/go-git v4.7.0+incompatible
@@ -11,7 +13,11 @@ require (
 	github.com/gookit/config/v2 v2.1.8
 	github.com/matoous/go-nanoid/v2 v2.0.0
 	github.com/spf13/cobra v1.6.1
-	github.com/BurntSushi/toml v1.2.1
+)
+
+require (
+	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
+	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
 )
 
 require (
@@ -21,7 +27,6 @@ require (
 
 require (
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
-
 	github.com/Microsoft/go-winio v0.5.2 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20221026131551-cf6655e29de4 // indirect
 	github.com/acomagu/bufpipe v1.0.3 // indirect

@@ -196,3 +196,12 @@ func RemoveProfile(id string) {
 	}
 	saveFile()
 }
+
+func CheckIfProfileExists(id string) bool {
+	for _, profile := range profiles {
+		if profile.Id == id {
+			return true
+		}
+	}
+	return false
+}
