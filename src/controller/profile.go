@@ -3,6 +3,12 @@ package controller
 import (
 	"fmt"
 
+	"os"
+	"path/filepath"
+
+	"time"
+
+	"github.com/BurntSushi/toml"
 	"github.com/fatih/color"
 	"github.com/julien040/gut/src/print"
 	"github.com/julien040/gut/src/profile"
@@ -161,4 +167,51 @@ func ProfilesList(cmd *cobra.Command, args []string) {
 			fmt.Printf(color.HiBlackString("%d. %s | %s | %s | %s | %s \n"), key, val.Id, color.HiBlueString(val.Alias), color.HiBlueString(val.Username), color.HiBlueString(val.Website), color.HiBlueString(val.Email))
 		}
 	}
+}
+func associateProfileToPath(profileID string, path string) {
+	// Get current date
+	currentDate := time.Now().Format("2006-01-02 15:04:05")
+	// Check if file exists
+	pathToWrite := filepath.Join(path, ".gut")
+	if _, err := os.Stat(pathToWrite); os.IsNotExist(err) {
+		// Create file
+		f, err := os.Create(pathToWrite)
+		if err != nil {
+			exitOnError("We can't create the file .gut at "+pathToWrite, err)
+		}
+		f.Close()
+	}
+	// Open file in write mode
+	f, err := os.OpenFile(pathToWrite,
+		os.O_WRONLY|os.O_TRUNC, 0755)
+	if err != nil {
+		exitOnError("We can't open the file .gut at "+pathToWrite, err)
+	}
+	// Close file at the end of the function
+	defer f.Close()
+
+	// Create the schema
+	profileIDSchema := SchemaGutConf{
+		ProfileID: profileID,
+		UpdatedAt: currentDate,
+	}
+
+	// Encode ID in TOML
+	t := toml.NewEncoder(f)
+	err = t.Encode(profileIDSchema)
+	if err != nil {
+		exitOnError("We can't encode in TOML", err)
+	}
+
+	// Write profile id in the file
+	/* _, err = f.WriteString(profileID)
+	if err != nil {
+		exitOnError("We can't write in the file .gutconf at "+pathToWrite, err)
+	} */
+
+}
+
+type SchemaGutConf struct {
+	ProfileID string `toml:"profile_id"`
+	UpdatedAt string `toml:"updated_at"`
 }
