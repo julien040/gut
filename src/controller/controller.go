@@ -19,9 +19,14 @@ import (
 
 // An helper function to exit the program if an error occurs
 func exitOnError(str string, err error) {
+	fmt.Println("")
 	if err != nil {
-		print.Message(str, print.Error)
-		fmt.Println(err)
+		if str != "" {
+			print.Message(str, print.Error)
+		}
+		fmt.Printf("Error message: %s\n", err)
+		print.Message("If this error persists, please open an issue on GitHub: https://github.com/julien040/gut/issues/new", print.None)
+		print.Message("Exiting...\n", print.Info)
 		os.Exit(1)
 	}
 }

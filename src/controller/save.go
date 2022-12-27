@@ -108,14 +108,14 @@ func Save(cmd *cobra.Command, args []string) {
 	var qs = []*survey.Question{
 		{
 			Name:     "Type",
-			Prompt:   &survey.Select{Message: "Select an emoji:", Options: emojiList(), PageSize: 12, Help: "Select an emoji to describe your commit"},
+			Prompt:   &survey.Select{Message: "Select a category", Options: emojiList(), PageSize: 12, Help: "Gut uses emojis to categorize your commits. Select an emoji that best describes your commit"},
 			Validate: survey.Required,
 		},
 	}
 	if title == "" || len(title) > 50 {
 		qs = append(qs, &survey.Question{
 			Name:     "Titre",
-			Prompt:   &survey.Input{Message: "What describes best your commit? (max 50 chars)", Help: "Write a short description of your commit (max 50 chars)"},
+			Prompt:   &survey.Input{Message: "Title of your commit (max 50 chars)", Help: "Ask yourself what you did in this commit | Use active voice | Avoid using 'and' or 'or'"},
 			Validate: titleValidation,
 		})
 	} else {
@@ -124,7 +124,7 @@ func Save(cmd *cobra.Command, args []string) {
 	if message == "" {
 		qs = append(qs, &survey.Question{
 			Name:   "Description",
-			Prompt: &survey.Multiline{Message: "Describe your commit (optional)", Help: "Write a description of your commit (optional)"},
+			Prompt: &survey.Multiline{Message: "Describe your commit (optional)", Help: "Write a description of your commit. Explain why you did this commit and assume that you are explaining to a colleague who knows nothing about the codebase"},
 		},
 		)
 	} else {
@@ -133,15 +133,15 @@ func Save(cmd *cobra.Command, args []string) {
 
 	err = survey.Ask(qs, &answers)
 	if err != nil {
-		exitOnError("Error while asking questions", err)
+		exitOnError("We can't get your answers", err)
 	}
 	commitMessage := computeCommitMessage(answers)
 	Result, err := executor.Commit(wd, commitMessage)
 	if err != nil {
 		exitOnError("Error while committing", err)
 	}
-	print.Message("Changes updated successfully with commit hash: "+Result.Hash, print.Success)
-	fmt.Printf("%d files changed, %d insertions(+), %d deletions(-)", Result.FilesUpdated, Result.FilesAdded, Result.FilesDeleted)
+	print.Message("\n\nChanges updated successfully with commit hash: "+Result.Hash, print.Success)
+	fmt.Printf("%d files changed, %d insertions(+), %d deletions(-)\n", Result.FilesUpdated, Result.FilesAdded, Result.FilesDeleted)
 
 }
 
