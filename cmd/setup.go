@@ -24,39 +24,26 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/julien040/gut/src/controller"
 	"github.com/spf13/cobra"
 )
 
-// authCmd represents the auth command
-var authCmd = &cobra.Command{
-	Use:   "auth",
-	Short: "Setup auth for private repositories",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("auth called")
-	},
+// setupCmd represents the setup command
+var setupCmd = &cobra.Command{
+	Use:   "setup",
+	Short: "Alias of 'init'",
+	Run:   controller.Init,
 }
 
-var githubAuthCmd = &cobra.Command{
-	Use:   "github",
-	Short: "Setup GitHub auth for the current repository",
+var setupAuthCmd = &cobra.Command{
+	Use:   "auth",
+	Short: "Setup a profile for the repository",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("auth github called")
+		fmt.Println("setup auth called")
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(authCmd)
-	authCmd.AddCommand(githubAuthCmd)
-	authCmd.Flags().StringP("username", "u", "", "Username")
-	authCmd.Flags().StringP("password", "p", "", "Password")
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// authCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// authCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.AddCommand(setupCmd)
+	setupCmd.AddCommand(setupAuthCmd)
 }
