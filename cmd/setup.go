@@ -22,8 +22,6 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/julien040/gut/src/controller"
 	"github.com/spf13/cobra"
 )
@@ -38,9 +36,7 @@ var setupCmd = &cobra.Command{
 var setupAuthCmd = &cobra.Command{
 	Use:   "auth",
 	Short: "Setup a profile for the repository",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("setup auth called")
-	},
+	Run:   controller.SetupAuth,
 }
 
 func init() {

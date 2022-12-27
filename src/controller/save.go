@@ -94,9 +94,7 @@ func Save(cmd *cobra.Command, args []string) {
 	if err != nil {
 		exitOnError("We're not able to get the current directory", err)
 	}
-	if !executor.IsPathGitRepo(wd) {
-		exitOnError("Sorry, this is not a git repository. Init a git repo with `gut init`", errors.New(""))
-	}
+	checkIfGitRepoInitialized(wd)
 	title := cmd.Flag("title").Value.String()
 	message := cmd.Flag("message").Value.String()
 	var answers struct {

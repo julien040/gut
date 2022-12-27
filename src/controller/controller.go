@@ -9,26 +9,29 @@ import (
 	"net/mail"
 	"net/url"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 
-	"path/filepath"
+	"github.com/spf13/cobra"
 
+	"github.com/julien040/gut/src/executor"
 	"github.com/julien040/gut/src/print"
+	"github.com/julien040/gut/src/prompt"
 )
 
 // An helper function to exit the program if an error occurs
 func exitOnError(str string, err error) {
 	fmt.Println("")
-	if err != nil {
-		if str != "" {
-			print.Message(str, print.Error)
-		}
-		fmt.Printf("Error message: %s\n", err)
-		print.Message("If this error persists, please open an issue on GitHub: https://github.com/julien040/gut/issues/new", print.None)
-		print.Message("Exiting...\n", print.Info)
-		os.Exit(1)
+	if str != "" {
+		print.Message(str, print.Error)
 	}
+	if err != nil {
+		fmt.Printf("Error message: %s\n", err)
+	}
+	print.Message("If this error persists, please open an issue on GitHub: https://github.com/julien040/gut/issues/new", print.None)
+	print.Message("Exiting...\n", print.Info)
+	os.Exit(1)
 }
 
 // Return true if the string is a valid URL for git
@@ -96,4 +99,24 @@ func isDomainValid(domain string) bool {
 	reg := regexp.MustCompile(`^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$`)
 	return reg.MatchString(domain)
 
+}
+
+// Check if the path is a git repo
+//
+// If it's not, ask the user if he wants to initialize a new repo
+// If he doesn't, exit the program. If he does, initialize a new repo
+func checkIfGitRepoInitialized(path string) {
+	// Check if the path is a git repo
+	if !executor.IsPathGitRepo(path) {
+		print.Message("Oups, this directory is not a git repository", print.Info)
+		val, err := prompt.InputBool("Do you want to initialize a new repository?", true)
+		if err != nil {
+			exitOnError("Oups, something went wrong while getting the input", err)
+		}
+		if val {
+			Init(&cobra.Command{}, []string{})
+		} else {
+			os.Exit(0)
+		}
+	}
 }
