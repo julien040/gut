@@ -22,6 +22,7 @@ main
 go.work
 
 test/
+.vscode
 
 # MacOS
 .DS_Store

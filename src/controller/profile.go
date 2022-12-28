@@ -169,9 +169,9 @@ func ProfilesList(cmd *cobra.Command, args []string) {
 		}
 	}
 }
-func associateProfileToPath(profile profile.Profile, path string) {
+func associateProfileToPath(profileArg profile.Profile, path string) {
 	// Set Profile Data in git config
-	executor.SetUserConfig(path, profile.Username, profile.Email)
+	executor.SetUserConfig(path, profileArg.Username, profileArg.Email)
 
 	// Get current date
 	currentDate := time.Now().Format("2006-01-02 15:04:05")
@@ -198,8 +198,8 @@ func associateProfileToPath(profile profile.Profile, path string) {
 	defer f.Close()
 
 	// Create the schema
-	profileIDSchema := SchemaGutConf{
-		ProfileID: profile.Id,
+	profileIDSchema := profile.SchemaGutConf{
+		ProfileID: profileArg.Id,
 		UpdatedAt: currentDate,
 	}
 
@@ -210,37 +210,4 @@ func associateProfileToPath(profile profile.Profile, path string) {
 		exitOnError("We can't encode in TOML", err)
 	}
 
-}
-
-func getProfileIDFromPath(path string) string {
-	// Open file in read mode
-	f, err :=
-		os.OpenFile(filepath.Join(path, ".gut"),
-			os.O_RDONLY, 0755)
-
-	if err != nil {
-		defer f.Close()
-		return ""
-
-	} else {
-		defer f.Close()
-		// Close file at the end of the function
-
-		// Create the schema
-		profileIDSchema := SchemaGutConf{}
-
-		// Decode ID in TOML
-		t := toml.NewDecoder(f)
-		_, err = t.Decode(&profileIDSchema)
-		if err != nil {
-			exitOnError("We can't decode in TOML", err)
-		}
-		return profileIDSchema.ProfileID
-	}
-
-}
-
-type SchemaGutConf struct {
-	ProfileID string `toml:"profile_id"`
-	UpdatedAt string `toml:"updated_at"`
 }

@@ -22,8 +22,7 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/julien040/gut/src/controller"
 	"github.com/spf13/cobra"
 )
 
@@ -32,9 +31,7 @@ var syncCmd = &cobra.Command{
 	Use:   "sync",
 	Short: "Sync your local changes with the remote repository",
 	Long:  `Execute a git pull and a git push to sync your local changes with the remote repository`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("sync called")
-	},
+	Run:   controller.Sync,
 }
 
 func init() {

@@ -1,6 +1,7 @@
 package profile
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -9,6 +10,7 @@ import (
 	nanoid "github.com/matoous/go-nanoid/v2"
 
 	keyring "github.com/99designs/keyring"
+	tomlreader "github.com/BurntSushi/toml"
 	config "github.com/gookit/config/v2"
 	toml "github.com/gookit/config/v2/toml"
 )
@@ -204,4 +206,51 @@ func CheckIfProfileExists(id string) bool {
 		}
 	}
 	return false
+}
+
+func GetProfileIDFromPath(path string) string {
+	// Open file in read mode
+	f, err :=
+		os.OpenFile(filepath.Join(path, ".gut"),
+			os.O_RDONLY, 0755)
+
+	if err != nil {
+		defer f.Close()
+		return ""
+
+	} else {
+		defer f.Close()
+		// Close file at the end of the function
+
+		// Create the schema
+		profileIDSchema := SchemaGutConf{}
+
+		// Decode ID in TOML
+		t := tomlreader.NewDecoder(f)
+		_, err = t.Decode(&profileIDSchema)
+		if err != nil {
+			print.Message("We can't decode the TOML file in "+path, print.Error)
+			os.Exit(1)
+		}
+		return profileIDSchema.ProfileID
+	}
+
+}
+
+func GetProfileFromPath(path string) (Profile, error) {
+	id := GetProfileIDFromPath(path)
+	if id == "" {
+		return Profile{}, errors.New("no profile found in this directory")
+	}
+	for _, profile := range profiles {
+		if profile.Id == id {
+			return profile, nil
+		}
+	}
+	return Profile{}, errors.New("no profile found globally")
+}
+
+type SchemaGutConf struct {
+	ProfileID string `toml:"profile_id"`
+	UpdatedAt string `toml:"updated_at"`
 }

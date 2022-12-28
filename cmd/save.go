@@ -37,16 +37,6 @@ var saveCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(saveCmd)
 	saveCmd.Flags().StringP("message", "m", "", "The commit message")
-	saveCmd.Flags().StringP("profile", "p", "", "The ID of the profile to use")
 	saveCmd.Flags().StringP("title", "t", "", "The title of the commit")
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// saveCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// saveCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/julien040/gut/src/print"
+	"github.com/julien040/gut/src/profile"
 	"github.com/julien040/gut/src/prompt"
 	"github.com/spf13/cobra"
 )
@@ -14,7 +15,7 @@ func SetupAuth(cmd *cobra.Command, args []string) {
 		exitOnError("Oups, something went wrong while getting the current working directory", err)
 	}
 	checkIfGitRepoInitialized(wd)
-	id := getProfileIDFromPath(wd)
+	id := profile.GetProfileIDFromPath(wd)
 	if id != "" {
 		val, err := prompt.InputBool("This repository is already associated with a profile. Do you want to change it?", true)
 		if err != nil {

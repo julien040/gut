@@ -12,13 +12,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type Emoji struct {
+type emoji struct {
 	Emoji       string
 	Code        string
 	Description string
 }
 
-var GitEmoji = []Emoji{
+var gitEmoji = []emoji{
 	{"🎉", ":tada:", "Initial commit"},
 	{"✨", ":sparkles:", "Introduce new features"},
 	{"🐛", ":bug:", "Fix a bug"},
@@ -145,7 +145,7 @@ func Save(cmd *cobra.Command, args []string) {
 
 func emojiList() []string {
 	var emojis []string
-	for _, e := range GitEmoji {
+	for _, e := range gitEmoji {
 		emojis = append(emojis, e.Emoji+" "+e.Description)
 	}
 	return emojis
@@ -167,6 +167,6 @@ func computeCommitMessage(answers struct {
 	Description string
 }) string {
 	var message string
-	message += GitEmoji[answers.Type].Emoji + " " + answers.Titre + "\n" + answers.Description
+	message += gitEmoji[answers.Type].Emoji + " " + answers.Titre + "\n" + answers.Description
 	return message
 }
