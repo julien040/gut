@@ -22,39 +22,32 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/julien040/gut/src/controller"
 	"github.com/spf13/cobra"
 )
 
 // branchCmd represents the branch command
 var branchCmd = &cobra.Command{
-	Use:   "branch",
-	Short: "List all branches",
-	Long:  `List all branches of the repository`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("branch called")
-	},
+	Use:     "branch",
+	Short:   "List all branches",
+	Long:    `List all branches of the repository`,
+	Run:     controller.Branch,
 	Aliases: []string{"b", "br", "branch ls", "branch list", "b ls", "br ls"},
 }
 
 var branchAddCmd = &cobra.Command{
-	Use:   "add",
-	Short: "Add a new branch",
-	Long:  `Add a new branch to the repository`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("branch add called")
-	},
+	Use:     "add",
+	Short:   "Alias of gut switch",
+	Run:     controller.Switch,
+	Args:    cobra.MaximumNArgs(1),
 	Aliases: []string{"new"},
 }
 
 var branchDeleteCmd = &cobra.Command{
-	Use:   "delete",
-	Short: "Delete a branch",
-	Long:  `Delete a branch from the repository`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("branch delete called")
-	},
+	Use:     "delete",
+	Short:   "Delete a branch",
+	Long:    `Delete a branch from the repository`,
+	Run:     controller.BranchDelete,
 	Aliases: []string{"del", "remove", "rm"},
 }
 
@@ -63,13 +56,4 @@ func init() {
 	branchCmd.AddCommand(branchAddCmd)
 	branchCmd.AddCommand(branchDeleteCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// branchCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// branchCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

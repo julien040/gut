@@ -22,18 +22,21 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"github.com/julien040/gut/src/controller"
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
-// switchCmd represents the switch command
-var switchCmd = &cobra.Command{
-	Use:   "switch",
-	Short: "Change the current branch",
-	Run:   controller.Switch,
-	Args:  cobra.MaximumNArgs(1),
+// historyCmd represents the history command
+var historyCmd = &cobra.Command{
+	Use:   "history",
+	Short: "Show history of commits",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("history called")
+	},
 }
 
 func init() {
-	rootCmd.AddCommand(switchCmd)
+	rootCmd.AddCommand(historyCmd)
+
 }
