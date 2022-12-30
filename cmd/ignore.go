@@ -22,7 +22,7 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"fmt"
+	"github.com/julien040/gut/src/controller"
 
 	"github.com/spf13/cobra"
 )
@@ -34,41 +34,22 @@ var ignoreCmd = &cobra.Command{
 	Long: `Download a .gitignore template from
 https://github.com/github/gitignore
 and add it to the current repository.
-If .gitignore already exists, it will be updated or overwritten.
+If .gitignore already exists, it will be updated.
 `,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("ignore called")
-	},
-}
+	Args: cobra.MaximumNArgs(1),
 
-var ignoreAddCmd = &cobra.Command{
-	Use:   "add",
-	Short: "Add a file or a directory to the .gitignore file",
-	Long:  `Add a file or a directory to the .gitignore file`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("ignore add called")
-	},
+	Run:     controller.Ignore,
+	Aliases: []string{"ig", "gitignore"},
 }
 
 var listTemplatesCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List all available templates",
-	Long:  `List all available templates`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("ignore list called")
-	},
+	Use:     "list",
+	Short:   "List all available templates",
+	Run:     controller.IgnoreList,
 	Aliases: []string{"ls"},
 }
 
 func init() {
 	rootCmd.AddCommand(ignoreCmd)
-	ignoreCmd.AddCommand(ignoreAddCmd)
 	ignoreCmd.AddCommand(listTemplatesCmd)
-	ignoreAddCmd.Flags().BoolP("force", "f", false, "Overwrite the .gitignore file if it already exists")
-	ignoreAddCmd.Flags().BoolP("update", "u", false, "Update the .gitignore file if it already exists")
-	ignoreAddCmd.Flags().String("template", "t", "Download a .gitignore template from github.com/github/gitignore")
-	ignoreAddCmd.Flags().String("filename", "f", "Name of the file to add to the .gitignore file")
-	ignoreAddCmd.MarkFlagFilename("filename")
-	ignoreAddCmd.Flags().String("directory", "d", "Name of the directory to add to the .gitignore file")
-	ignoreAddCmd.MarkFlagDirname("directory")
 }
