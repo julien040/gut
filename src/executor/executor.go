@@ -40,3 +40,19 @@ func GetGitURL(path string) (string, error) {
 	}
 	return remote.Config().URLs[0], nil
 }
+
+func IsWorkTreeClean(path string) (bool, error) {
+	repo, err := OpenRepo(path)
+	if err != nil {
+		return false, err
+	}
+	worktree, err := repo.Worktree()
+	if err != nil {
+		return false, err
+	}
+	status, err := worktree.Status()
+	if err != nil {
+		return false, err
+	}
+	return status.IsClean(), nil
+}

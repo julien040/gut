@@ -71,18 +71,23 @@ func DeleteBranch(path string, branchName string) error {
 		return err
 	}
 	// Check if branch exists
-	_, err = repo.Branch(branchName)
+	exists, err := CheckIfBranchExists(path, branchName)
 	if err != nil {
 		return err
 	}
+	if !exists {
+		return errors.New("branch does not exist")
+	}
+
 	// Check if branch is current branch
-	currentBranch, err := repo.Head()
+	currentBranch, err := GetCurrentBranch(path)
 	if err != nil {
 		return err
 	}
-	if currentBranch.Name().Short() == branchName {
+	if currentBranch == branchName {
 		return errors.New("cannot delete current branch")
 	}
+
 	branch := plumbing.NewBranchReferenceName(branchName)
 	err = repo.Storer.RemoveReference(branch)
 	return err
@@ -93,9 +98,38 @@ func CheckIfBranchExists(path string, branchName string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	_, err = repo.Branch(branchName)
+	// List all branches and check if branchName is in the list
+	branches, err := repo.Branches()
 	if err != nil {
-		return false, nil
+		return false, err
+
 	}
-	return true, nil
+	var branchNames []string
+
+	err = branches.ForEach(func(branch *plumbing.Reference) error {
+		branchNames = append(branchNames, branch.Name().Short())
+		return nil
+	})
+	if err != nil {
+		return false, err
+	}
+	for _, branch := range branchNames {
+		if branch == branchName {
+			return true, nil
+		}
+	}
+	return false, nil
+
+}
+
+func GetCurrentBranch(path string) (string, error) {
+	repo, err := OpenRepo(path)
+	if err != nil {
+		return "", err
+	}
+	head, err := repo.Head()
+	if err != nil {
+		return "", err
+	}
+	return head.Name().Short(), nil
 }

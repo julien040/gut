@@ -22,39 +22,21 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"github.com/julien040/gut/src/controller"
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
-// branchCmd represents the branch command
-var branchCmd = &cobra.Command{
-	Use:     "branch",
-	Short:   "List all branches",
-	Long:    `List all branches of the repository`,
-	Run:     controller.Branch,
-	Aliases: []string{"b", "br", "branch ls", "branch list", "b ls", "br ls", "branches"},
-}
-
-var branchAddCmd = &cobra.Command{
-	Use:     "add",
-	Short:   "Alias of gut switch",
-	Run:     controller.Switch,
-	Args:    cobra.MaximumNArgs(1),
-	Aliases: []string{"new"},
-}
-
-var branchDeleteCmd = &cobra.Command{
-	Use:     "delete",
-	Short:   "Delete a branch",
-	Long:    `Delete a branch from the repository`,
-	Run:     controller.BranchDelete,
-	Args:    cobra.MaximumNArgs(1),
-	Aliases: []string{"del", "remove", "rm"},
+// statusCmd represents the status command
+var statusCmd = &cobra.Command{
+	Use:   "status",
+	Short: "Show the status of the repository",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("status called")
+	},
 }
 
 func init() {
-	rootCmd.AddCommand(branchCmd)
-	branchCmd.AddCommand(branchAddCmd)
-	branchCmd.AddCommand(branchDeleteCmd)
+	rootCmd.AddCommand(statusCmd)
 
 }

@@ -30,7 +30,6 @@ func exitOnError(str string, err error) {
 		fmt.Printf("Error message: %s\n", err)
 	}
 	print.Message("If this error persists, please open an issue on GitHub: https://github.com/julien040/gut/issues/new", print.None)
-	print.Message("Exiting...\n", print.Info)
 	os.Exit(1)
 }
 
