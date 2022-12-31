@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -193,5 +194,12 @@ func Ignore(cmd *cobra.Command, args []string) {
 
 // Cmd to list all available gitignore templates
 func IgnoreList(cmd *cobra.Command, args []string) {
-	// TODO
+	templates, err := fetchIgnoreList()
+	if err != nil {
+		exitOnError("Sorry, I couldn't fetch the list of available gitignore templates 😓", err)
+	}
+	print.Message("Available gitignore templates:", print.Info)
+	temp := selectGitignoreTemplate(templates)
+	print.Message("Here's the content of the "+temp.name+" template:", print.Info)
+	fmt.Println(temp.contents)
 }

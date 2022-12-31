@@ -26,3 +26,5 @@ test/
 
 # MacOS
 .DS_Store
+
+.gut
