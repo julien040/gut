@@ -119,3 +119,10 @@ func checkIfGitRepoInitialized(path string) {
 		}
 	}
 }
+
+func checkIfGitInstalled() {
+	installed := executor.IsGitInstalled()
+	if !installed {
+		exitOnError("Oups, it seems like git is not installed on your computer and I need it to run this command.\nPlease follow the instructions on https://git-scm.com/book/en/v2/Getting-Started-Installing-Git to install it", nil)
+	}
+}

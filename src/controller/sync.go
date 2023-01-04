@@ -48,13 +48,8 @@ func syncRepo(path string, remote executor.Remote, requestProfile bool) error {
 		print.Message("Uh oh, your credentials are wrong 😢. Please select another profile.", print.Error)
 		return syncRepo(path, remote, true)
 	} else if err == git.ErrNonFastForwardUpdate {
-		/*
-			Transform this into a function prompting the user to create a pull request
-		*/
 		print.Message("Uh oh, there is a conflict 😢. Currently, Gut doesn't support conflict resolution. Please resolve the conflict manually.", print.Error)
-		print.Message("You can use the git cli to resolve the conflict. \n	git pull "+remote.Name+" \n	git push "+remote.Name, print.None)
-		print.Message("\n\nAlternatively, you can switch to another branch and then sync the repository. To switch to another branch, use the command: \n	gut switch <branch_name>", print.None)
-		print.Message("Switching to another branch will let you open a new pull request if your provider supports it.", print.None)
+		print.Message("You can use the git cli to resolve the conflict. \n	git pull -r "+remote.Name+" \n	git push "+remote.Name, print.None)
 		os.Exit(1)
 
 	} else if err == git.NoErrAlreadyUpToDate || err == nil { // If there is nothing to pull or if there is no error, we push the repository

@@ -1,6 +1,8 @@
 package executor
 
 import (
+	"path/filepath"
+
 	"github.com/go-git/go-git/v5"
 )
 
@@ -50,6 +52,8 @@ func IsWorkTreeClean(path string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	// To not track files listed in the .gitignore
+	replaceGitIgnore(worktree, filepath.Join(path, ".gitignore"))
 	status, err := worktree.Status()
 	if err != nil {
 		return false, err
