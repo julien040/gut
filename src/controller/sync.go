@@ -10,6 +10,8 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/spf13/cobra"
+
+	"github.com/briandowns/spinner"
 )
 
 func Sync(cmd *cobra.Command, args []string) {
@@ -42,7 +44,11 @@ func syncRepo(path string, remote executor.Remote, requestProfile bool) error {
 		}
 	}
 	// Once we have the profile, we pull the repository
+	spinnerPull := spinner.New(spinner.CharSets[9], 100)
+	spinnerPull.Prefix = "Pulling the repository from " + remote.Name + " "
+	spinnerPull.Start()
 	err := executor.Pull(path, remote.Name, profileLocal.Username, profileLocal.Password)
+	spinnerPull.Stop()
 	// If the credentials are wrong, we ask the user to select another profile
 	if err == transport.ErrAuthorizationFailed || err == transport.ErrAuthenticationRequired {
 		print.Message("Uh oh, your credentials are wrong 😢. Please select another profile.", print.Error)
@@ -53,7 +59,14 @@ func syncRepo(path string, remote executor.Remote, requestProfile bool) error {
 		os.Exit(1)
 
 	} else if err == git.NoErrAlreadyUpToDate || err == nil { // If there is nothing to pull or if there is no error, we push the repository
+		print.Message("Pull successful 🎉", print.Success)
+
+		spinnerPush := spinner.New(spinner.CharSets[9], 100)
+		spinnerPush.Prefix = "Pushing the repository to " + remote.Name + " "
+		spinnerPush.Start()
 		err := executor.Push(path, remote.Name, profileLocal.Username, profileLocal.Password)
+		spinnerPush.Stop()
+
 		if err == git.NoErrAlreadyUpToDate || err == nil { // If there is nothing to push, we exit
 			print.Message("The repository has been synced with "+remote.Name+" 🎉", print.Success)
 			return nil
