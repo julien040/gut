@@ -48,14 +48,14 @@ func addRemote(path string, origin bool) (executor.Remote, error) {
 	})
 	err := survey.Ask(qs, &answers)
 	if err != nil {
-		exitOnError("We can't get your answers 😢", err)
+		exitOnError("Sorry, I can't get your answer", err)
 	}
 	if origin {
 		answers.Name = "origin"
 	}
 	err = executor.AddRemote(path, answers.Name, answers.Url)
 	if err != nil {
-		exitOnError("We can't add the remote 😢", err)
+		exitOnError("Sorry, I can't add the remote", err)
 	}
 	return executor.Remote{
 		Name: answers.Name,
@@ -67,7 +67,7 @@ func addRemote(path string, origin bool) (executor.Remote, error) {
 func chooseRemote(path string) (executor.Remote, error) {
 	remote, err := executor.ListRemote(path)
 	if err != nil {
-		exitOnError("We can't get the remote of the repository 😢", err)
+		exitOnError("Sorry, I can't get the remote of the repository", err)
 	}
 	remoteName := make([]string, len(remote))
 	for i, r := range remote {
@@ -81,7 +81,7 @@ func chooseRemote(path string) (executor.Remote, error) {
 	}
 	err = survey.AskOne(prompt, &remoteChoice)
 	if err != nil {
-		exitOnError("We can't get your choice 😢", err)
+		exitOnError("Sorry I can't get your answer", err)
 	}
 	return remote[remoteChoice], nil
 
@@ -90,7 +90,7 @@ func chooseRemote(path string) (executor.Remote, error) {
 func getRemote(path string) (executor.Remote, error) {
 	remote, err := executor.ListRemote(path)
 	if err != nil {
-		exitOnError("We can't get the remote of the repository 😢", err)
+		exitOnError("Sorry, I can't get the remote of the repository", err)
 	}
 	lenRemote := len(remote)
 	// Case no remote : We ask the user to add one

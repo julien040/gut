@@ -48,7 +48,7 @@ func init() {
 	// Get user home directory
 	home, err := os.UserHomeDir()
 	if err != nil {
-		exit(err, "We can't find your home directory 😓")
+		exit(err, "Sorry, I can't find your home directory 😓")
 	}
 	// Path to the config file
 	configPath = filepath.Join(home, "/.gut/", "profiles.toml")
@@ -58,7 +58,7 @@ func init() {
 		// Create .gut directory
 		err = os.Mkdir(filepath.Join(home, "/.gut/"), 0755)
 		if err != nil {
-			exit(err, "We can't create the .gut directory 😓 at "+filepath.Join(home, "/.gut/"))
+			exit(err, "I can't create the .gut directory 😓 at "+filepath.Join(home, "/.gut/"))
 		}
 	}
 
@@ -67,10 +67,10 @@ func init() {
 	if os.IsNotExist(err) {
 		f, err = os.Create(configPath)
 		if err != nil {
-			exit(err, "We can't create the config file located at "+configPath+" 😓")
+			exit(err, "I can't create the config file 😓 at "+configPath)
 		}
 	} else if err != nil {
-		exit(err, "We can't open the config file located at "+configPath+" 😓")
+		exit(err, "I can't open the config file 😓 at "+configPath)
 	}
 	f.Close()
 	config.BindStruct("profile", &Profile{})
@@ -80,7 +80,7 @@ func init() {
 	// Load config file
 	err = config.LoadFiles(configPath)
 	if err != nil {
-		exit(err, "We can't load the config file located at "+configPath+" 😓")
+		exit(err, "I can't load the config file 😓 at "+configPath)
 	}
 
 	// Load keyring
@@ -88,7 +88,7 @@ func init() {
 		ServiceName: "gut",
 	})
 	if err != nil {
-		exit(err, "We can open the keyring 😓")
+		exit(err, "I can't load the keyring 😓")
 
 	}
 
@@ -98,28 +98,28 @@ func init() {
 		// Get password from keyring
 		password, err := ring.Get(key)
 		if err != nil {
-			print.Message("The profile "+key+" doesn't have a password, we will skip it", print.Warning)
+			print.Message("The profile "+key+" doesn't have a password, I'll skip it", print.Warning)
 			continue
 		}
 		val := val.(map[string]interface{})
 		alias, ok := val["Alias"].(string)
 		if !ok {
-			print.Message("The profile "+key+" doesn't have an alias, we will skip it", print.Warning)
+			print.Message("The profile "+key+" doesn't have an alias, I'll will skip it", print.Warning)
 			continue
 		}
 		website, ok := val["Website"].(string)
 		if !ok {
-			print.Message("The profile "+key+" doesn't have a website, we will skip it", print.Warning)
+			print.Message("The profile "+key+" doesn't have a website, I'll will skip it", print.Warning)
 			continue
 		}
 		username, ok := val["Username"].(string)
 		if !ok {
-			print.Message("The profile "+key+" doesn't have a username, we will skip it", print.Warning)
+			print.Message("The profile "+key+" doesn't have a username, I'll will skip it", print.Warning)
 			continue
 		}
 		email, ok := val["Email"].(string)
 		if !ok {
-			print.Message("The profile "+key+" doesn't have an email, we will skip it", print.Warning)
+			print.Message("The profile "+key+" doesn't have an email, I'll will skip it", print.Warning)
 			continue
 		}
 
@@ -141,12 +141,12 @@ func saveFile() {
 	// Open config file in write mode
 	f, err := os.OpenFile(configPath, os.O_WRONLY|os.O_TRUNC, 0755)
 	if err != nil {
-		exit(err, "We can't open the config file located at "+configPath+" 😓")
+		exit(err, "I can't open the config file located at "+configPath+" 😓")
 	}
 	// Save config file
 	_, err = config.DumpTo(f, "toml")
 	if err != nil {
-		exit(err, "We can't save the config file located at "+configPath+" 😓")
+		exit(err, "I can't save the config file located at "+configPath+" 😓")
 	}
 }
 
@@ -154,7 +154,7 @@ func saveFile() {
 func AddProfile(profile Profile) string {
 	id, err := nanoid.New()
 	if err != nil {
-		exit(err, "We can't generate an id for the profile 😓")
+		exit(err, "Sorry, I can't generate an id 😓")
 	}
 
 	toSave := DiskProfile{
@@ -168,13 +168,13 @@ func AddProfile(profile Profile) string {
 		Data: []byte(profile.Password),
 	})
 	if err != nil {
-		exit(err, "We can't save the password 😓")
+		exit(err, "Sorry, I can't save the password in the keyring 😓")
 	}
 
 	// Add profile to the database
 	err = config.Set(id, toSave)
 	if err != nil {
-		exit(err, "We can't save the profile in profiles.toml 😓")
+		exit(err, "Sorry, I can't save the profile in profiles.toml 😓")
 	}
 	saveFile()
 	return id
@@ -189,12 +189,12 @@ func RemoveProfile(id string) {
 	// Remove profile from the database
 	err := config.Set(id, nil)
 	if err != nil {
-		exit(err, "We can't remove the profile from profiles.toml 😓")
+		exit(err, "Sorry, I can't remove the profile from profiles.toml 😓")
 	}
 	// Remove password from the keyring
 	err = ring.Remove(id)
 	if err != nil {
-		exit(err, "We can't remove the password from the keyring 😓")
+		exit(err, "Sorry, I can't remove the password from the keyring 😓")
 	}
 	saveFile()
 }
@@ -229,7 +229,7 @@ func GetProfileIDFromPath(path string) string {
 		t := tomlreader.NewDecoder(f)
 		_, err = t.Decode(&profileIDSchema)
 		if err != nil {
-			print.Message("We can't decode the TOML file in "+path, print.Error)
+			print.Message("Sorry, I can't read the .gut file 😓", print.Error)
 			os.Exit(1)
 		}
 		return profileIDSchema.ProfileID

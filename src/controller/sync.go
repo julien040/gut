@@ -17,11 +17,11 @@ import (
 func Sync(cmd *cobra.Command, args []string) {
 	wd, err := os.Getwd()
 	if err != nil {
-		exitOnError("We can't get the current working directory 😢", err)
+		exitOnError("Sorry, I can't get the current working directory 😢", err)
 	}
 	remote, err := getRemote(wd)
 	if err != nil {
-		exitOnError("We can't get the remote of the repository 😢", err)
+		exitOnError("Sorry, I can't get the remote 😢", err)
 	}
 	syncRepo(wd, remote, false)
 }
@@ -55,7 +55,7 @@ func syncRepo(path string, remote executor.Remote, requestProfile bool) error {
 		return syncRepo(path, remote, true)
 	} else if err == git.ErrNonFastForwardUpdate {
 		print.Message("Uh oh, there is a conflict 😢. Currently, Gut doesn't support conflict resolution. Please resolve the conflict manually.", print.Error)
-		print.Message("You can use the git cli to resolve the conflict. \n	git pull -r "+remote.Name+" \n	git push "+remote.Name, print.None)
+		print.Message("You can use the git cli to resolve the conflict. \n	git pull -r "+remote.Name+" [branch] "+" \n	git push "+remote.Name+" [branch] ", print.None)
 		os.Exit(1)
 
 	} else if err == git.NoErrAlreadyUpToDate || err == nil { // If there is nothing to pull or if there is no error, we push the repository
@@ -68,14 +68,14 @@ func syncRepo(path string, remote executor.Remote, requestProfile bool) error {
 		spinnerPush.Stop()
 
 		if err == git.NoErrAlreadyUpToDate || err == nil { // If there is nothing to push, we exit
-			print.Message("The repository has been synced with "+remote.Name+" 🎉", print.Success)
+			print.Message("I've successfully synced your repository 🎉", print.Success)
 			return nil
 		} else {
 			// If there is another unknown error, we exit
-			exitOnError("We can't push the repository 😢", err)
+			exitOnError("Sorry, I can't push the repository 😢", err)
 		}
 	} else { // If there is another unknown error, we exit
-		exitOnError("We can't pull the repository 😢", err)
+		exitOnError("Sorry, I can't pull the repository 😢", err)
 	}
 	return nil
 }

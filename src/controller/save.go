@@ -92,7 +92,7 @@ var gitEmoji = []emoji{
 func Save(cmd *cobra.Command, args []string) {
 	wd, err := os.Getwd()
 	if err != nil {
-		exitOnError("We're not able to get the current directory", err)
+		exitOnError("Sorry, I can't get the current working directory", err)
 	}
 	checkIfGitRepoInitialized(wd)
 	title := cmd.Flag("title").Value.String()
@@ -131,7 +131,7 @@ func Save(cmd *cobra.Command, args []string) {
 
 	err = survey.Ask(qs, &answers)
 	if err != nil {
-		exitOnError("We can't get your answers", err)
+		exitOnError("Sorry, I can't get your answers", err)
 	}
 	commitMessage := computeCommitMessage(answers)
 	Result, err := executor.Commit(wd, commitMessage)

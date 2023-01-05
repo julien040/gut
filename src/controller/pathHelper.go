@@ -21,7 +21,7 @@ func getAbsPathFromInput(repoName string, str string) string {
 	if str == "." {
 		res = wd
 		if err != nil {
-			exitOnError("For some reason, we couldn't get your input 😓", err)
+			exitOnError("Sorry, I can't get the current directory 😓", err)
 		}
 	} else if str == "" {
 		res = filepath.Join(wd, repoName)
@@ -31,7 +31,7 @@ func getAbsPathFromInput(repoName string, str string) string {
 		// If the path is not absolute, we assume it's relative to the current directory
 		res, err = filepath.Abs(str)
 		if err != nil {
-			exitOnError("We can't parse the path you entered. Make sure it's a valid path", err)
+			exitOnError("I can't get the absolute path of the path you entered 😓", err)
 		}
 	}
 	return res
@@ -42,7 +42,7 @@ func askForPath(repoName string, message string) string {
 	str, err := prompt.InputLine(message +
 		color.HiBlackString("\n . for the current directory | leave empty for a folder named "+repoName+" | or enter a path (e.g. /home/user/repo) \n"))
 	if err != nil {
-		exitOnError("For some reason, we couldn't get your input 😓", err)
+		exitOnError("Sorry, I can't get your input 😓", err)
 	}
 	return getAbsPathFromInput(repoName, str)
 }
@@ -59,12 +59,12 @@ func checkIfPathExist(path string) bool {
 func promptUserForMakingPath(path string) bool {
 	shouldCreate, err := prompt.InputBool("The path you entered doesn't exist. Do you want to create it? \n "+color.HiBlackString(path), true)
 	if err != nil {
-		exitOnError("For some reason, we couldn't get your input 😓", err)
+		exitOnError("Sorry, I can't get your input 😓", err)
 	}
 	if shouldCreate {
 		err = os.MkdirAll(path, os.ModePerm)
 		if err != nil {
-			exitOnError("We couldn't create the path you entered 😓. Please make sure you have the right permissions", err)
+			exitOnError("I can't create the path you entered 😓", err)
 		}
 	}
 	return shouldCreate

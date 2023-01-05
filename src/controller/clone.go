@@ -30,11 +30,11 @@ func Clone(cmd *cobra.Command, args []string) {
 		// Loop until the user enters a valid URL
 		str, err := prompt.InputWithValidation(
 			"Which repo do you want to clone?",
-			"\nUh oh, we can't parse the repo you entered. Make sure it's a valid URL (e.g. https://example.com/repo.git) ",
+			"\nUh oh, I don't think this is a valid URL 😓. Please make sure it follows the format (e.g. https://github.com/julien040/gut)",
 			checkURL,
 		)
 		if err != nil {
-			exitOnError("For some reason, we couldn't get your input 😓", err)
+			exitOnError("Sorry, I can't get your answer", err)
 		} else {
 			repo = str
 		}
@@ -51,13 +51,13 @@ func Clone(cmd *cobra.Command, args []string) {
 
 	isEmpty, err := isDirectoryEmpty(path)
 	if err != nil {
-		exitOnError("We couldn't check if the directory is empty 😓", err)
+		exitOnError("I couldn't check if the directory is empty 😓", err)
 	}
 	if !isEmpty {
 		// If the directory is not empty, ask the user if he wants to continue
 		shouldContinue, err := prompt.InputBool("The directory is not empty. Do you want to continue? This will overwrite the existing files", true)
 		if err != nil {
-			exitOnError("For some reason, we couldn't get your input 😓", err)
+			exitOnError("Sorry, I can't get your answer", err)
 		}
 		if !shouldContinue {
 			os.Exit(0)
@@ -66,7 +66,7 @@ func Clone(cmd *cobra.Command, args []string) {
 
 	shouldConserveGitHistory, err := prompt.InputBool("Do you want to also clone the git history?", true)
 	if err != nil {
-		exitOnError("For some reason, we couldn't get your input 😓", err)
+		exitOnError("Sorry, I can't get your answer", err)
 	}
 
 	/* --------------------------------- Clone repo ------------------------------ */
@@ -80,10 +80,10 @@ func Clone(cmd *cobra.Command, args []string) {
 			print.Message("Oh no, this repo requires authentication 😓. Please enter your credentials", print.Info)
 			cloneRepoNeedsAuth(repo, path, shouldConserveGitHistory)
 		} else {
-			exitOnError("Sorry but we couldn't clone the repo 😓", err)
+			exitOnError("Sorry but I can't clone the repo 😓", err)
 		}
 	} else {
-		print.Message("Your repo has been cloned successfully 🎉 at "+path, print.Success)
+		print.Message("I've successfully cloned your repo 🎉 at "+path, print.Success)
 	}
 
 }
@@ -95,9 +95,9 @@ func cloneRepoNeedsAuth(repo string, path string, shouldConserveGitHistory bool)
 		print.Message("Uh oh, the credentials you entered are invalid. Please try again with a different profile 😉", print.Error)
 		cloneRepoNeedsAuth(repo, path, shouldConserveGitHistory)
 	} else if err != nil {
-		exitOnError("We couldn't clone the repo 😓. Please make sure you have the right permissions", err)
+		exitOnError("I can't clone the repo 😓. Please make sure you have the right permissions", err)
 	} else {
-		print.Message("Your repo has been cloned successfully 🎉 at "+path, print.Success)
+		print.Message("I've successfully cloned your repo 🎉 at "+path, print.Success)
 		associateProfileToPath(profile, path)
 	}
 }

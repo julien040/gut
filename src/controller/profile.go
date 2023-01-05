@@ -22,7 +22,7 @@ import (
 func askForProfileAlias() string {
 	alias, err := prompt.InputLine("Alias: ")
 	if err != nil {
-		print.Message("We can't read your input 😓", print.Error)
+		print.Message("I can't read your input 😓", print.Error)
 		return askForProfileAlias()
 	} else if alias == "" {
 		print.Message("The alias can't be empty 😓", print.Error)
@@ -37,7 +37,7 @@ func askForProfileUsername() string {
 	// Ask for the username
 	username, err := prompt.InputLine("Login username: ")
 	if err != nil {
-		print.Message("We can't read your input 😓", print.Error)
+		print.Message("I can't read your input 😓", print.Error)
 		return askForProfileUsername()
 	}
 	return username
@@ -53,7 +53,7 @@ func askForProfilePassword() string {
 	}
 	password, err := prompt.Run()
 	if err != nil {
-		print.Message("We can't read your input 😓", print.Error)
+		print.Message("Sorry, I can't read your input 😓", print.Error)
 		return askForProfilePassword()
 	}
 	return password
@@ -65,10 +65,10 @@ func askForProfileWebsite(gitURL string) string {
 		userInput, err1 := prompt.InputLine("Website: ")
 		parsedHost := getHost(userInput)
 		if err1 != nil || parsedHost == "" {
-			print.Message("We can't read your input 😓", print.Error)
+			print.Message("Sorry, I can't read your input 😓", print.Error)
 			return askForProfileWebsite("")
 		} else if !isDomainValid(parsedHost) {
-			print.Message("We think this URL is not valid 😓. Please type it again", print.Error)
+			print.Message("I think this url isn't valid 😓. Please type it again", print.Error)
 			return askForProfileWebsite("")
 		}
 		return parsedHost
@@ -81,10 +81,10 @@ func askForProfileEmail() string {
 	// Ask for the email
 	email, err := prompt.InputLine("Email (for commit): ")
 	if err != nil {
-		print.Message("We can't read your input 😓", print.Error)
+		print.Message("I can't read your input 😓", print.Error)
 		return askForProfileEmail()
 	} else if !isEmailValid(email) {
-		print.Message("We think this email is not valid 😓. Please type it again", print.Error)
+		print.Message("I think this email isn't valid 😓. Please type it again", print.Error)
 		return askForProfileEmail()
 	}
 	fmt.Println(email)
@@ -103,7 +103,7 @@ func newProfile(url string) profile.Profile {
 	// Save the profile
 	id := profile.AddProfile(newProfile)
 	newProfile.Id = id
-	print.Message("Profile created successfully 🎉 \n", print.Success)
+	print.Message("I've successfully created your profile 😎", print.Success)
 	return newProfile
 }
 
@@ -127,7 +127,7 @@ func selectProfile(gitURL string, createPossible bool) profile.Profile {
 	}
 	i, _, err := promptSelect.Run()
 	if err != nil {
-		exitOnError("We can't read your input 😓", err)
+		exitOnError("Sorry, I can't get your answer", err)
 	}
 	if createPossible && i == lenProfiles-1 {
 		// Create a new profile
@@ -182,7 +182,7 @@ func associateProfileToPath(profileArg profile.Profile, path string) {
 		// Create file
 		f, err := os.Create(pathToWrite)
 		if err != nil {
-			exitOnError("We can't create the file .gut at "+pathToWrite, err)
+			exitOnError("I can't create the file .gut at "+pathToWrite, err)
 		}
 		f.Close()
 	}
@@ -191,7 +191,7 @@ func associateProfileToPath(profileArg profile.Profile, path string) {
 	f, err := os.OpenFile(pathToWrite,
 		os.O_WRONLY|os.O_TRUNC, 0755)
 	if err != nil {
-		exitOnError("We can't open the file .gut at "+pathToWrite, err)
+		exitOnError("I can't open the file .gut at "+pathToWrite, err)
 	}
 
 	// Close file at the end of the function
@@ -207,7 +207,10 @@ func associateProfileToPath(profileArg profile.Profile, path string) {
 	t := toml.NewEncoder(f)
 	err = t.Encode(profileIDSchema)
 	if err != nil {
-		exitOnError("We can't encode in TOML", err)
+		exitOnError("I can't write the profile ID in the file .gut at "+pathToWrite, err)
 	}
+
+	// Change Git Config
+	executor.SetUserConfig(path, profileArg.Username, profileArg.Email)
 
 }
