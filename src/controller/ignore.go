@@ -12,7 +12,9 @@ import (
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/briandowns/spinner"
+	"github.com/julien040/gut/src/executor"
 	"github.com/julien040/gut/src/print"
+	"github.com/julien040/gut/src/prompt"
 	"github.com/spf13/cobra"
 )
 
@@ -187,7 +189,31 @@ func Ignore(cmd *cobra.Command, args []string) {
 		return
 	} else {
 		appendToGitignore(filepath.Join(wd, ".gitignore"), diff, template.name)
+
 		print.Message("I've updated your .gitignore file with the "+template.name+" template 🎉", print.Success)
+
+		/*
+			Git will continue to track the files that are already tracked by git even if they are added to the .gitignore file.
+			To untrack the files, we need to run the command `git rm -r --cached .`
+			We prompt the user if they want us to run the command for them.
+		*/
+		installed := executor.IsGitInstalled() // We prompt only if git is installed
+		if installed {
+			print.Message("If you plan to use the git CLI, you might want to untrack the files that are already tracked by git.", print.Info)
+			res, err := prompt.InputBool("Do you want me to run the command for you?", true)
+			if err != nil {
+				exitOnError("Sorry, I couldn't get your input 😓", err)
+			}
+			if res {
+				err := executor.GitRmCached()
+				if err != nil {
+					exitOnError("Sorry, I couldn't untrack the files 😓", err)
+				} else {
+					print.Message("I've untracked the files for you 🎉", print.Success)
+				}
+
+			}
+		}
 	}
 
 }

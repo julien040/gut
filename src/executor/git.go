@@ -50,3 +50,15 @@ func GitPullRebase(username string, password string, remote string) error {
 func GitRevert(commitID string) error {
 	return runCommand("git", "revert", "-m", "1", "--no-edit", commitID)
 }
+
+func GitRmCached() error {
+	err := runCommand("git", "add", ".")
+	if err != nil {
+		return err
+	}
+	err = runCommand("git", "rm", "-r", "--ignore-unmatch", "--cached", ".")
+	if err != nil {
+		return err
+	}
+	return runCommand("git", "add", ".")
+}
