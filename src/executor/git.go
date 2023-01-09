@@ -48,7 +48,22 @@ func GitPullRebase(username string, password string, remote string) error {
 
 // Execute git revert --no-edit using the exec package
 func GitRevert(commitID string) error {
-	return runCommand("git", "revert", "-m", "1", "--no-edit", commitID)
+	/*
+		We use the commitID + ".." + "HEAD" syntax to revert the commit and all the commits after it.
+		For example, if we have the following commits:
+			- 1
+			- 2
+			- 3
+			- 4
+
+		And we want to revert the commit 2, we will use the following command:
+			git revert -m 1 --no-edit 2..HEAD
+
+		If we only use the commit id, it will revert change from this commit and not the commits after it.
+
+	*/
+	commitString := commitID + "..HEAD"
+	return runCommand("git", "revert", "-m", "1", "--no-edit", commitString)
 }
 
 func GitRmCached() error {

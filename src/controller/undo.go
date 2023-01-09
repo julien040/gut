@@ -99,6 +99,6 @@ func Undo(cmd *cobra.Command, args []string) {
 		exitOnError("Sorry, I can't add all the files 😢", err)
 	}
 
-	print.Message("The last commit has been undone", print.Success)
+	print.Message("I've successfully to "+getTitleFromCommit(commit.Message), print.Success)
 
 }
