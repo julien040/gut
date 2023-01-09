@@ -22,21 +22,22 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"github.com/julien040/gut/src/controller"
+	"github.com/julien040/gut/src/print"
 	"github.com/spf13/cobra"
 )
 
-// undoCmd represents the undo command
-var undoCmd = &cobra.Command{
-	Use:   "undo [file]...",
-	Short: "Rollback your directory to the last commit",
-	Long: `Rollback the repository to the last commit. If you have uncommitted changes, they will be lost.
-If zero arguments are passed, all the files will be rolled back.
-If one or more arguments are passed, only the files passed as arguments will be rolled back.`,
-	Run: controller.Undo,
+// fixCmd represents the fix command
+var fixCmd = &cobra.Command{
+	Use:   "fix",
+	Short: "Fix your mess",
+	Long: `A command to fix your mess. Available fixes:
+	1) Change last commit message
+	2) Commit on the wrong branch`,
+	Run: func(cmd *cobra.Command, args []string) {
+		print.Message("I'm sorry, but this feature is not yet implemented.", print.Error)
+	},
 }
 
 func init() {
-	rootCmd.AddCommand(undoCmd)
-
+	rootCmd.AddCommand(fixCmd)
 }

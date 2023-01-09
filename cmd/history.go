@@ -22,17 +22,17 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/julien040/gut/src/print"
 	"github.com/spf13/cobra"
 )
 
 // historyCmd represents the history command
 var historyCmd = &cobra.Command{
-	Use:   "history",
-	Short: "Show history of commits",
+	Use:     "history",
+	Short:   "Show history of commits",
+	Aliases: []string{"hist", "log", "logs"},
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("history called")
+		print.Message("I'm sorry, but this feature is not yet implemented.", print.Error)
 	},
 }
 
