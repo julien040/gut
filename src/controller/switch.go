@@ -24,14 +24,7 @@ func Switch(cmd *cobra.Command, args []string) {
 		exitOnError("I can't check if there are uncommitted changes", err)
 	}
 	if !clean {
-		res, err := prompt.InputBool("Uh oh, there are uncommitted changes. They might be lost if you switch branch. Do you want to continue?", false)
-		if err != nil {
-			exitOnError("That's a shame, I can't get your answer", err)
-		}
-		if !res {
-			print.Message("Okay, I won't switch branch", print.Info)
-			return
-		}
+		exitOnError("Uh oh, there are uncommitted changes. Please commit them before switching branches", nil)
 	}
 
 	// Input the branch name

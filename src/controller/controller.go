@@ -28,8 +28,9 @@ func exitOnError(str string, err error) {
 	}
 	if err != nil {
 		fmt.Printf("Error message: %s\n", err)
+		print.Message("If this error persists, please open an issue on GitHub: https://github.com/julien040/gut/issues/new", print.None)
 	}
-	print.Message("If this error persists, please open an issue on GitHub: https://github.com/julien040/gut/issues/new", print.None)
+
 	os.Exit(1)
 }
 
