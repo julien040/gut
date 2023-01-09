@@ -1,5 +1,5 @@
 /*
-Copyright © 2023 Julien CAGNIART
+Copyright © 2022 Julien CAGNIART
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,13 +27,13 @@ import (
 )
 
 // undoCmd represents the undo command
-var undoCmd = &cobra.Command{
-	Use:   "undo",
-	Short: "Rollback your directory to the last commit",
-	Run:   controller.Undo,
+var revertCmd = &cobra.Command{
+	Use:     "revert",
+	Short:   "Revert to a specified commit (require Git)",
+	Aliases: []string{"goback", "rollback"},
+	Run:     controller.Revert,
 }
 
 func init() {
-	rootCmd.AddCommand(undoCmd)
-
+	rootCmd.AddCommand(revertCmd)
 }
