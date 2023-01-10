@@ -17,6 +17,8 @@ func Status(cmd *cobra.Command, args []string) {
 		exitOnError("Sorry, I can't get the current working directory 😢", err)
 	}
 
+	checkIfGitRepoInitialized(wd)
+
 	/* --------------------------- Get current branch --------------------------- */
 	branch, err := executor.GetCurrentBranch(wd)
 	if err != nil {
