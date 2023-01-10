@@ -13,6 +13,7 @@ import (
 )
 
 // Execute a command using the exec package and return the error if any
+// Print output only if it's stderr
 func runCommand(arg ...string) error {
 	wd, err := os.Getwd()
 	if err != nil {
@@ -76,4 +77,16 @@ func GitRmCached() error {
 		return err
 	}
 	return runCommand("git", "add", ".")
+}
+
+func GitResetAllHead() error {
+	return runCommand("git", "reset", "--hard", "HEAD")
+}
+
+// I prefer to use checkout because git reset gave me some problems
+// When used with a file in args, git reset was thinking it was a directory.
+// Because of that, git reset was just exiting with an error
+func GitCheckoutFileHead(file string) error {
+
+	return runCommand("git", "checkout", "HEAD", "--", file)
 }

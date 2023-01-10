@@ -29,7 +29,7 @@ import (
 // undoCmd represents the undo command
 var undoCmd = &cobra.Command{
 	Use:   "undo [file]...",
-	Short: "Rollback your directory to the last commit",
+	Short: "Rollback files to the last commit (require git)",
 	Long: `Rollback the repository to the last commit. If you have uncommitted changes, they will be lost.
 If zero arguments are passed, all the files will be rolled back.
 If one or more arguments are passed, only the files passed as arguments will be rolled back.`,
