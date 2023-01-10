@@ -18,6 +18,8 @@ type emoji struct {
 	Description string
 }
 
+// Some emojis are missing.
+// Should be fixed later
 var gitEmoji = []emoji{
 	{"🎉", ":tada:", "Initial commit"},
 	{"✨", ":sparkles:", "Introduce new features"},
@@ -90,13 +92,22 @@ var gitEmoji = []emoji{
 }
 
 func Save(cmd *cobra.Command, args []string) {
+	// Get where the command has been called
 	wd, err := os.Getwd()
 	if err != nil {
 		exitOnError("Sorry, I can't get the current working directory", err)
 	}
+
+	// Check if the current directory is a git repository
 	checkIfGitRepoInitialized(wd)
+
+	// Check if the user config is set
+	verifUserConfig(wd)
+
+	// Get the flag from the cmd
 	title := cmd.Flag("title").Value.String()
 	message := cmd.Flag("message").Value.String()
+
 	var answers struct {
 		Type        int
 		Titre       string
@@ -133,7 +144,12 @@ func Save(cmd *cobra.Command, args []string) {
 	if err != nil {
 		exitOnError("Sorry, I can't get your answers", err)
 	}
+
+	// Append the title to the body because git only accept a message.
+	// However, it's common that the first line is the title and the rest the body
 	commitMessage := computeCommitMessage(answers)
+
+	// Commit the changes
 	Result, err := executor.Commit(wd, commitMessage)
 	if err != nil {
 		exitOnError("Error while committing", err)
@@ -169,4 +185,50 @@ func computeCommitMessage(answers struct {
 	var message string
 	message += gitEmoji[answers.Type].Emoji + " " + answers.Titre + "\n" + answers.Description
 	return message
+}
+
+// Check if the username and email for commits are set.
+//
+// If not, prompt the user to set it
+func verifUserConfig(path string) {
+	// Get User config for the path
+	username, email, err := executor.GetUserConfig(path)
+	if err != nil {
+		exitOnError("Sorry, I can't get your user config", err)
+	}
+	if username != "" && email != "" {
+		return
+	}
+	print.Message("Hi there, I'm missing some information about you. Let's fix that!", print.Info)
+	var answers struct {
+		Username string
+		Email    string
+	}
+	var qs []*survey.Question
+	if username == "" {
+		qs = append(qs, &survey.Question{
+			Name:   "Username",
+			Prompt: &survey.Input{Message: "Username", Help: "How do you want to be called in commits messages?"},
+
+			Validate: survey.Required,
+		})
+	}
+	if email == "" {
+		qs = append(qs, &survey.Question{
+			Name:     "Email",
+			Prompt:   &survey.Input{Message: "Email", Help: "What is your email?(Be careful, this is public on GitHub)"},
+			Validate: survey.Required,
+		})
+	}
+	answers.Username = username
+	answers.Email = email
+	err = survey.Ask(qs, &answers)
+	if err != nil {
+		exitOnError("Sorry, I can't get your answers", err)
+	}
+	err = executor.SetUserConfig(path, answers.Username, answers.Email)
+	if err != nil {
+		exitOnError("Sorry, I can't set your user config", err)
+	}
+
 }

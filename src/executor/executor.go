@@ -16,6 +16,18 @@ func OpenRepo(path string) (*git.Repository, error) {
 	return git.PlainOpen(path)
 }
 
+func GetUserConfig(path string) (string, string, error) {
+	repo, err := OpenRepo(path)
+	if err != nil {
+		return "", "", err
+	}
+	config, err := repo.Config()
+	if err != nil {
+		return "", "", err
+	}
+	return config.User.Name, config.User.Email, nil
+}
+
 func SetUserConfig(path string, name string, email string) error {
 	repo, err := OpenRepo(path)
 	if err != nil {
