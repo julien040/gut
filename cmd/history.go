@@ -22,7 +22,7 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"github.com/julien040/gut/src/print"
+	"github.com/julien040/gut/src/controller"
 	"github.com/spf13/cobra"
 )
 
@@ -31,9 +31,7 @@ var historyCmd = &cobra.Command{
 	Use:     "history",
 	Short:   "Show history of commits",
 	Aliases: []string{"hist", "log", "logs"},
-	Run: func(cmd *cobra.Command, args []string) {
-		print.Message("I'm sorry, but this feature is not yet implemented.", print.Error)
-	},
+	Run:     controller.History,
 }
 
 func init() {
