@@ -22,8 +22,7 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/julien040/gut/src/controller"
 	"github.com/spf13/cobra"
 )
 
@@ -31,9 +30,7 @@ import (
 var statusCmd = &cobra.Command{
 	Use:   "status",
 	Short: "Show the status of the repository",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("status called")
-	},
+	Run:   controller.Status,
 }
 
 func init() {
