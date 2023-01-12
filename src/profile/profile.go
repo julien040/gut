@@ -250,6 +250,16 @@ func GetProfileFromPath(path string) (Profile, error) {
 	return Profile{}, errors.New("no profile found globally")
 }
 
+func IsAliasAlreadyUsed(alias string) bool {
+	for _, profile := range profiles {
+		if profile.Alias == alias {
+			return true
+		}
+	}
+	return false
+
+}
+
 type SchemaGutConf struct {
 	ProfileID string `toml:"profile_id"`
 	UpdatedAt string `toml:"updated_at"`

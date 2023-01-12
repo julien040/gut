@@ -33,6 +33,7 @@ var fixCmd = &cobra.Command{
 	Long: `A command to fix your mess. Available fixes:
 	1) Change last commit message
 	2) Commit on the wrong branch`,
+	Aliases: []string{"fixes", "bobthebuilder", "bob"},
 	Run: func(cmd *cobra.Command, args []string) {
 		print.Message("I'm sorry, but this feature is not yet implemented.", print.Error)
 	},

@@ -8,24 +8,31 @@ import (
 
 	"time"
 
+	"github.com/AlecAivazis/survey/v2"
 	"github.com/BurntSushi/toml"
+	"github.com/briandowns/spinner"
 	"github.com/fatih/color"
+	promptui "github.com/manifoldco/promptui"
+	"github.com/spf13/cobra"
+
 	"github.com/julien040/gut/src/executor"
 	"github.com/julien040/gut/src/print"
 	"github.com/julien040/gut/src/profile"
 	"github.com/julien040/gut/src/prompt"
-	promptui "github.com/manifoldco/promptui"
-	"github.com/spf13/cobra"
+	"github.com/julien040/gut/src/provider"
 )
 
 // Ask a profile alias to the user
 func askForProfileAlias() string {
-	alias, err := prompt.InputLine("Alias: ")
+	alias, err := prompt.InputLine("How would you like to call this profile? ")
 	if err != nil {
 		print.Message("I can't read your input 😓", print.Error)
 		return askForProfileAlias()
 	} else if alias == "" {
-		print.Message("The alias can't be empty 😓", print.Error)
+		print.Message("I'm sorry but I can't create a profile with a empty name 😓", print.Error)
+		return askForProfileAlias()
+	} else if profile.IsAliasAlreadyUsed(alias) {
+		print.Message("I'm sorry but this alias is already used 😓\nTo not confuse you, please choose another name", print.Error)
 		return askForProfileAlias()
 	} else {
 		return alias
@@ -35,7 +42,7 @@ func askForProfileAlias() string {
 // Ask a profile username to the user
 func askForProfileUsername() string {
 	// Ask for the username
-	username, err := prompt.InputLine("Login username: ")
+	username, err := prompt.InputLine("What is the username? ")
 	if err != nil {
 		print.Message("I can't read your input 😓", print.Error)
 		return askForProfileUsername()
@@ -62,7 +69,7 @@ func askForProfilePassword() string {
 func askForProfileWebsite(gitURL string) string {
 	gitURL = getHost(gitURL)
 	if gitURL == "" {
-		userInput, err1 := prompt.InputLine("Website: ")
+		userInput, err1 := prompt.InputLine("On which website is your repository hosted? ")
 		parsedHost := getHost(userInput)
 		if err1 != nil || parsedHost == "" {
 			print.Message("Sorry, I can't read your input 😓", print.Error)
@@ -79,7 +86,7 @@ func askForProfileWebsite(gitURL string) string {
 
 func askForProfileEmail() string {
 	// Ask for the email
-	email, err := prompt.InputLine("Email (for commit): ")
+	email, err := prompt.InputLine("What is your email? So that I can identify your commits")
 	if err != nil {
 		print.Message("I can't read your input 😓", print.Error)
 		return askForProfileEmail()
@@ -87,19 +94,132 @@ func askForProfileEmail() string {
 		print.Message("I think this email isn't valid 😓. Please type it again", print.Error)
 		return askForProfileEmail()
 	}
-	fmt.Println(email)
 	return email
 }
 
-func newProfile(url string) profile.Profile {
-	// Create a new profile
-	newProfile := profile.Profile{
-		Alias:    askForProfileAlias(),
-		Username: askForProfileUsername(),
-		Password: askForProfilePassword(),
-		Website:  askForProfileWebsite(url),
-		Email:    askForProfileEmail(),
+func newGitHubProfile() profile.Profile {
+	print.Message("⚠️ None of your data will leave your computer\n", print.Info)
+	// Show a spinner
+	s := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
+	s.Suffix = " Hand tight, I'm talking to GitHub to get a code for you..."
+	s.Start()
+	res, err := provider.Github_AskDeviceCode()
+	s.Stop()
+	if err != nil {
+		exitOnError("I can't get a code from GitHub", err)
 	}
+	color.Black("To authenticate with GitHub, please visit the following URL and enter %s", color.WhiteString(res.UserCode))
+	fmt.Println(res.VerificationURI)
+
+	// Show a spinner
+	s.Suffix = " I've done my job. Now I'm waiting for you to authenticate with GitHub... 🥱"
+	s.Start()
+	token, err := provider.GitHub_PollToken(res.DeviceCode)
+	s.Stop()
+	if err == provider.ErrExpiredToken {
+		exitOnError("The code has expired. Please try again", nil)
+	} else if err != nil {
+		exitOnError("I can't get a token from GitHub", err)
+	}
+	// I need to use \n because the spinner will overwrite the message
+	print.Message("I've successfully authenticated you with GitHub 🎉\n", print.Success)
+
+	// Get the user profile
+	s.Suffix = " Hand tight, Now I'm getting your profile from GitHub..."
+	s.Start()
+	user, err := provider.GitHub_GetUserName(token)
+	s.Stop()
+	if err != nil {
+		exitOnError("I can't get your profile from GitHub", err)
+	}
+	print.Message("I've successfully got your username from GitHub 🎉\n", print.Success)
+
+	// Get the user email
+	s.Suffix = " Hand tight, Now I'm fetching your email(s) from GitHub..."
+	s.Start()
+	emails, err := provider.Github_GetEmails(token)
+	s.Stop()
+	if err != nil {
+		exitOnError("I can't get your email from GitHub", err)
+	}
+	print.Message("I've successfully got your email(s) from GitHub 🎉\n", print.Success)
+	nbrEmail := len(emails)
+
+	var email string
+	// In case no email was retrieved, we prompt the user to add one
+	if nbrEmail == 0 {
+		email = askForProfileEmail()
+	} else if nbrEmail == 1 { // In case there is only one email, we use it
+		email = emails[0]
+	} else { // If several verified emails were found, we ask the user to choose one
+		var emailAnswer string
+		promptEmail := survey.Select{
+			Message: "Which email do you want to use? (Be careful, this might be public)",
+			Options: emails,
+			Help:    "This email is used to sign your commits. It can be easily retrieve publicly using the git history. I recommend you to use the @users.noreply.github.com email",
+		}
+		err := survey.AskOne(&promptEmail, &emailAnswer)
+		if err != nil {
+			exitOnError("I can't read your input 😓", err)
+		}
+		email = emailAnswer
+	}
+	alias := askForProfileAlias()
+	return profile.Profile{
+		Alias:    alias,
+		Website:  "github.com",
+		Email:    email,
+		Password: token,
+		Username: user,
+	}
+
+}
+
+// Create a new profile
+func newProfile(url string) profile.Profile {
+	// There is two type of flow: Github or anything else
+	// Usign the URL, we check if the user is using Github
+	// If yes, we call newGitHubProfile
+	// If not, we continue the normal flow
+
+	var newProfile profile.Profile
+
+	// Check if the user is using Github
+	host := getHost(url)
+
+	// Case the user is using Github
+	if host == "github.com" {
+		newProfile = newGitHubProfile()
+	} else if url != "" { // Case the user is using another platform
+		newProfile = profile.Profile{
+			Alias:    askForProfileAlias(),
+			Username: askForProfileUsername(),
+			Password: askForProfilePassword(),
+			Website:  askForProfileWebsite(url),
+			Email:    askForProfileEmail(),
+		}
+	} else { // Case we don't know which platform is used, it could be github or not so we ask the user
+		var answer int
+
+		// I use a select because BitBucket and GitLab might be added in the future
+		prompt := &survey.Select{
+			Message: "Which platform would you like to use ?",
+			Options: []string{"GitHub", "Other"},
+		}
+		survey.AskOne(prompt, &answer)
+		if answer == 0 { // Case the user is using Github
+			newProfile = newGitHubProfile()
+		} else { // Case the user is using another platform
+			newProfile = profile.Profile{
+				Alias:    askForProfileAlias(),
+				Username: askForProfileUsername(),
+				Password: askForProfilePassword(),
+				Website:  askForProfileWebsite(url),
+				Email:    askForProfileEmail(),
+			}
+		}
+	}
+
 	// Save the profile
 	id := profile.AddProfile(newProfile)
 	newProfile.Id = id
