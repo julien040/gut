@@ -60,7 +60,13 @@ func askForProfilePassword() string {
 	}
 	password, err := prompt.Run()
 	if err != nil {
+		// We have to exit because ctrl+c is catched in err != nil.
+		// If means that the user can't exit the program
 		print.Message("Sorry, I can't read your input 😓", print.Error)
+		os.Exit(1)
+	}
+	if password == "" {
+		print.Message("I'm sorry but I can't create a profile with a empty password 😓", print.Error)
 		return askForProfilePassword()
 	}
 	return password

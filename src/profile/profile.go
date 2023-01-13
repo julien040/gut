@@ -170,6 +170,7 @@ func AddProfile(profile Profile) string {
 	if err != nil {
 		exit(err, "Sorry, I can't save the password in the keyring 😓")
 	}
+	profiles = append(profiles, profile)
 
 	// Add profile to the database
 	err = config.Set(id, toSave)
