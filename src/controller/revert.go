@@ -34,7 +34,7 @@ func chooseCommit(commits []object.Commit) object.Commit {
 	// Ask the user to choose a commit
 	qs := &survey.Select{
 
-		Message: "Choose a commit to undo",
+		Message: "Choose a commit",
 		Options: choices,
 	}
 	// Get the answer
@@ -76,6 +76,7 @@ func Revert(cmd *cobra.Command, args []string) {
 			return
 		}
 	}
+	print.Message("Choose a commit to revert to", print.Info)
 	// Use go git to get the list of commits sorted by date (newest first)
 	commits, err := executor.ListCommit(wd)
 	if err != nil {
@@ -99,6 +100,6 @@ func Revert(cmd *cobra.Command, args []string) {
 		exitOnError("Sorry, I can't add all the files 😢", err)
 	}
 
-	print.Message("I've successfully to "+getTitleFromCommit(commit.Message), print.Success)
+	print.Message("I've successfully reverted to "+getTitleFromCommit(commit.Message), print.Success)
 
 }

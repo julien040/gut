@@ -9,8 +9,10 @@ import (
 	"net/mail"
 	"net/url"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -126,4 +128,24 @@ func checkIfGitInstalled() {
 	if !installed {
 		exitOnError("Oups, it seems like git is not installed on your computer and I need it to run this command.\nPlease follow the instructions on https://git-scm.com/book/en/v2/Getting-Started-Installing-Git to install it", nil)
 	}
+}
+
+// https://gist.github.com/hyg/9c4afcd91fe24316cbf0
+//
+// Open the default browser to the specified URL.
+func openInBrowser(url string) error {
+	var err error
+
+	switch runtime.GOOS {
+	case "linux":
+		err = exec.Command("xdg-open", url).Start()
+	case "windows":
+		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
+	case "darwin":
+		err = exec.Command("open", url).Start()
+	default:
+		err = fmt.Errorf("unsupported platform")
+	}
+	return err
+
 }
