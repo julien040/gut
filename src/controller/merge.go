@@ -109,14 +109,17 @@ func Merge(cmd *cobra.Command, args []string) {
 	case "github.com":
 		githubURL := remoteURL + "/compare/" + currentBranch + "..." + branch + "?quick_pull=1"
 		color.Black("To merge %s into %s, I recommend opening a pull request on GitHub. Open the following URL in your browser:\n%s\n", branch, currentBranch, color.WhiteString(githubURL))
+		print.Message("Make sure you have synced your changes with \"gut sync\" before opening the pull request", print.Info)
 		openInBrowser(githubURL)
 	case "gitlab.com":
 		gitlabURL := remoteURL + "/merge_requests/new?merge_request%5Bsource_branch%5D=" + branch + "&merge_request%5Btarget_branch%5D=" + currentBranch
 		color.Black("To merge %s into %s, I recommend opening a merge request on GitLab. Open the following URL in your browser:\n%s\n", branch, currentBranch, color.WhiteString(gitlabURL))
+		print.Message("Make sure you have synced your changes with \"gut sync\" before opening the pull request", print.Info)
 		openInBrowser(gitlabURL)
 	case "bitbucket.org":
 		bitbucketURL := remoteURL + "/pull-requests/new?source=" + branch + "&dest=" + currentBranch
 		color.Black("To merge %s into %s, I recommend opening a pull request on Bitbucket. Open the following URL in your browser:\n%s\n", branch, currentBranch, color.WhiteString(bitbucketURL))
+		print.Message("Make sure you have synced your changes with \"gut sync\" before opening the pull request", print.Info)
 		openInBrowser(bitbucketURL)
 	default:
 		isGitInstalled := executor.IsGitInstalled()
