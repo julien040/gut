@@ -65,7 +65,7 @@ func Merge(cmd *cobra.Command, args []string) {
 			exitOnError("Sorry, I can't find any branch to merge 😢", nil)
 		}
 		// Ask the user to choose a branch
-		res, err := prompt.InputSelect("Choose a branch to merge", options)
+		res, err := prompt.InputSelect("Choose a branch to merge into "+currentBranch, options)
 		if err != nil {
 			exitOnError("Sorry, I can't get your answer 😢", err)
 		}
@@ -96,6 +96,19 @@ func Merge(cmd *cobra.Command, args []string) {
 		exitOnError("Sorry, I can't get the current branch 😢", err)
 	}
 
+	// Prompt the user to sync his changes
+	// If the repo is not sync with the upstream, the pull request will not have the latest changes
+	promptUserToSync := func() {
+		res, err := prompt.InputBool("Would you like to sync your changes?", true)
+		if err != nil {
+			exitOnError("Sorry, I can't get your answer 😢", err)
+		}
+		if res {
+			// Run sync command
+			Sync(cmd, args)
+		}
+	}
+
 	// Check if the repo is using only one origin. If yes, we act accordingly to each platform
 	// If not, returns an empty string. In this case, we use the default merge method
 	platform, remoteURL, err := getPlatformUsed(wd)
@@ -108,18 +121,18 @@ func Merge(cmd *cobra.Command, args []string) {
 	switch platform {
 	case "github.com":
 		githubURL := remoteURL + "/compare/" + currentBranch + "..." + branch + "?quick_pull=1"
+		promptUserToSync()
 		color.Black("To merge %s into %s, I recommend opening a pull request on GitHub. Open the following URL in your browser:\n%s\n", branch, currentBranch, color.WhiteString(githubURL))
-		print.Message("Make sure you have synced your changes with \"gut sync\" before opening the pull request", print.Info)
 		openInBrowser(githubURL)
 	case "gitlab.com":
 		gitlabURL := remoteURL + "/merge_requests/new?merge_request%5Bsource_branch%5D=" + branch + "&merge_request%5Btarget_branch%5D=" + currentBranch
+		promptUserToSync()
 		color.Black("To merge %s into %s, I recommend opening a merge request on GitLab. Open the following URL in your browser:\n%s\n", branch, currentBranch, color.WhiteString(gitlabURL))
-		print.Message("Make sure you have synced your changes with \"gut sync\" before opening the pull request", print.Info)
 		openInBrowser(gitlabURL)
 	case "bitbucket.org":
 		bitbucketURL := remoteURL + "/pull-requests/new?source=" + branch + "&dest=" + currentBranch
+		promptUserToSync()
 		color.Black("To merge %s into %s, I recommend opening a pull request on Bitbucket. Open the following URL in your browser:\n%s\n", branch, currentBranch, color.WhiteString(bitbucketURL))
-		print.Message("Make sure you have synced your changes with \"gut sync\" before opening the pull request", print.Info)
 		openInBrowser(bitbucketURL)
 	default:
 		isGitInstalled := executor.IsGitInstalled()
