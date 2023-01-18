@@ -19,10 +19,31 @@ func Sync(cmd *cobra.Command, args []string) {
 	if err != nil {
 		exitOnError("Sorry, I can't get the current working directory 😢", err)
 	}
+	// Check if the repository is initialized
+	checkIfGitRepoInitialized(wd)
+
+	// Check if there is uncommited changes
+	// If there is, we ask the user to commit them
+	// If there is not, we exit
+
+	clean, err := executor.IsWorkTreeClean(wd)
+	if err != nil {
+		exitOnError("Sorry, I can't check if there are uncommited changes 😢", err)
+	}
+	if !clean {
+		exitOnError("Uh oh, there are uncommited changes. Please commit them before syncing 😢", nil)
+	}
+
+	// Get the remote
+	// If there is no remote, we ask the user to add one
+	// If there is more than one remote, we ask the user to select one
+	// If there is only one remote, we use it
 	remote, err := getRemote(wd)
 	if err != nil {
 		exitOnError("Sorry, I can't get the remote 😢", err)
 	}
+
+	// We extract the code to use it recursively in case of error
 	syncRepo(wd, remote, false)
 }
 
@@ -55,7 +76,7 @@ func syncRepo(path string, remote executor.Remote, requestProfile bool) error {
 		return syncRepo(path, remote, true)
 	} else if err == git.ErrNonFastForwardUpdate {
 		print.Message("Uh oh, there is a conflict 😢. Currently, Gut doesn't support conflict resolution. Please resolve the conflict manually.", print.Error)
-		print.Message("You can use the git cli to resolve the conflict. \n	git pull -r "+remote.Name+" [branch] "+" \n	git push "+remote.Name+" [branch] ", print.None)
+		print.Message("You can use the git cli to resolve the conflict. \nOr you can rebase if you want\n	git pull -r "+remote.Name+" [branch] "+" \n	git push "+remote.Name+" [branch] ", print.None)
 		os.Exit(1)
 
 	} else if err == git.NoErrAlreadyUpToDate || err == nil { // If there is nothing to pull or if there is no error, we push the repository

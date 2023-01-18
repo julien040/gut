@@ -25,18 +25,7 @@ func Merge(cmd *cobra.Command, args []string) {
 		exitOnError("Sorry, I can't check if the working directory is clean 😢", err)
 	}
 	if !clean {
-		print.Message("Sorry, but the working directory is not clean 😢", print.Error)
-		res, err := prompt.InputBool("Would you like to save your changes?", true)
-		if err != nil {
-			exitOnError("Sorry, I can't get your answer 😢", err)
-		}
-		if res {
-			// Run save command
-			Save(cmd, args)
-		} else {
-			print.Message("See you later then 😊", print.Info)
-			os.Exit(0)
-		}
+		exitOnError("Uh oh, there are uncommitted changes. Please commit them before merging branches 😢", nil)
 
 	}
 
