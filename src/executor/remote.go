@@ -49,3 +49,15 @@ func RemoveRemote(path string, name string) error {
 	err = repo.DeleteRemote(name)
 	return err
 }
+
+func RemoteExists(path string, name string) (bool, error) {
+	repo, err := OpenRepo(path)
+	if err != nil {
+		return false, err
+	}
+	_, err = repo.Remote(name)
+	if err != nil {
+		return false, nil
+	}
+	return true, nil
+}
