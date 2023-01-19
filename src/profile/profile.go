@@ -101,22 +101,22 @@ func init() {
 		val := val.(map[string]interface{})
 		alias, ok := val["Alias"].(string)
 		if !ok {
-			print.Message("The profile "+key+" doesn't have an alias, I'll will skip it", print.Warning)
+			print.Message("The profile "+key+" doesn't have an alias, I'll skip it", print.Warning)
 			continue
 		}
 		website, ok := val["Website"].(string)
 		if !ok {
-			print.Message("The profile "+key+" doesn't have a website, I'll will skip it", print.Warning)
+			print.Message("The profile "+key+" doesn't have a website, I'll skip it", print.Warning)
 			continue
 		}
 		username, ok := val["Username"].(string)
 		if !ok {
-			print.Message("The profile "+key+" doesn't have a username, I'll will skip it", print.Warning)
+			print.Message("The profile "+key+" doesn't have a username, I'll skip it", print.Warning)
 			continue
 		}
 		email, ok := val["Email"].(string)
 		if !ok {
-			print.Message("The profile "+key+" doesn't have an email, I'll will skip it", print.Warning)
+			print.Message("The profile "+key+" doesn't have an email, I'll skip it", print.Warning)
 			continue
 		}
 
