@@ -9,10 +9,10 @@ import (
 	"github.com/julien040/gut/src/print"
 	nanoid "github.com/matoous/go-nanoid/v2"
 
-	keyring "github.com/99designs/keyring"
 	tomlreader "github.com/BurntSushi/toml"
 	config "github.com/gookit/config/v2"
 	toml "github.com/gookit/config/v2/toml"
+	keyring "github.com/zalando/go-keyring"
 )
 
 type Profile struct {
@@ -35,13 +35,13 @@ var configPath string
 
 var profiles []Profile
 
-var ring keyring.Keyring
-
 func exit(err error, message string) {
 	print.Message(message, "error")
 	fmt.Println(err)
 	os.Exit(1)
 }
+
+const serviceName = "gut"
 
 // Init a config file for the profiles and load it into the config package
 func init() {
@@ -84,9 +84,6 @@ func init() {
 	}
 
 	// Load keyring
-	ring, err = keyring.Open(keyring.Config{
-		ServiceName: "gut",
-	})
 	if err != nil {
 		exit(err, "I can't load the keyring 😓")
 
@@ -96,7 +93,7 @@ func init() {
 	data := config.Data()
 	for key, val := range data {
 		// Get password from keyring
-		password, err := ring.Get(key)
+		password, err := keyring.Get(serviceName, key)
 		if err != nil {
 			print.Message("The profile "+key+" doesn't have a password, I'll skip it", print.Warning)
 			continue
@@ -128,7 +125,7 @@ func init() {
 			Id:       key,
 			Alias:    alias,
 			Username: username,
-			Password: string(password.Data),
+			Password: string(password),
 			Website:  website,
 			Email:    email,
 		})
@@ -163,10 +160,7 @@ func AddProfile(profile Profile) string {
 		Username: profile.Username,
 		Email:    profile.Email,
 	}
-	err = ring.Set(keyring.Item{
-		Key:  id,
-		Data: []byte(profile.Password),
-	})
+	err = keyring.Set(serviceName, id, profile.Password)
 	if err != nil {
 		exit(err, "Sorry, I can't save the password in the keyring 😓")
 	}
@@ -193,7 +187,7 @@ func RemoveProfile(id string) {
 		exit(err, "Sorry, I can't remove the profile from profiles.toml 😓")
 	}
 	// Remove password from the keyring
-	err = ring.Remove(id)
+	err = keyring.Delete(serviceName, id)
 	if err != nil {
 		exit(err, "Sorry, I can't remove the password from the keyring 😓")
 	}
