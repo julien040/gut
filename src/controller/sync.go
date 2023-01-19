@@ -79,7 +79,7 @@ func syncRepo(path string, remote executor.Remote, requestProfile bool) error {
 		print.Message("You can use the git cli to resolve the conflict. \nOr you can rebase if you want\n	git pull -r "+remote.Name+" [branch] "+" \n	git push "+remote.Name+" [branch] ", print.None)
 		os.Exit(1)
 
-	} else if err == git.NoErrAlreadyUpToDate || err == nil { // If there is nothing to pull or if there is no error, we push the repository
+	} else if err == git.NoErrAlreadyUpToDate || err == transport.ErrEmptyRemoteRepository || err == nil { // If there is nothing to pull, we push
 		print.Message("Pull successful 🎉", print.Success)
 
 		spinnerPush := spinner.New(spinner.CharSets[9], 100)
