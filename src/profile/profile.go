@@ -9,9 +9,7 @@ import (
 	"github.com/julien040/gut/src/print"
 	nanoid "github.com/matoous/go-nanoid/v2"
 
-	tomlreader "github.com/BurntSushi/toml"
-	config "github.com/gookit/config/v2"
-	toml "github.com/gookit/config/v2/toml"
+	"github.com/BurntSushi/toml"
 	keyring "github.com/zalando/go-keyring"
 )
 
@@ -73,24 +71,28 @@ func init() {
 		exit(err, "I can't open the config file 😓 at "+configPath)
 	}
 	f.Close()
-	config.BindStruct("profile", &Profile{})
+	/* 	config.BindStruct("profile", &Profile{})
 
-	config.AddDriver(toml.Driver)
+	   	config.AddDriver(toml.Driver)
 
-	// Load config file
-	err = config.LoadFiles(configPath)
+	   	// Load config file
+	   	err = config.LoadFiles(configPath)
+	   	if err != nil {
+	   		exit(err, "I can't load the config file 😓 at "+configPath)
+	   	} */
+
+	// Open file in read mode
+	f, err = os.Open(configPath)
+	if err != nil {
+		exit(err, "I can't open the config file 😓 at "+configPath)
+	}
+	// Load config file and unmarshal it
+	var data map[string]interface{}
+	_, err = toml.NewDecoder(f).Decode(&data)
 	if err != nil {
 		exit(err, "I can't load the config file 😓 at "+configPath)
 	}
 
-	// Load keyring
-	if err != nil {
-		exit(err, "I can't load the keyring 😓")
-
-	}
-
-	// Load profiles
-	data := config.Data()
 	for key, val := range data {
 		// Get password from keyring
 		password, err := keyring.Get(serviceName, key)
@@ -140,11 +142,30 @@ func saveFile() {
 	if err != nil {
 		exit(err, "I can't open the config file located at "+configPath+" 😓")
 	}
-	// Save config file
+	/* // Save config file
 	_, err = config.DumpTo(f, "toml")
 	if err != nil {
 		exit(err, "I can't save the config file located at "+configPath+" 😓")
+	} */
+	// Create a new encoder
+	encoder := toml.NewEncoder(f)
+
+	// Convert profiles to a map of DiskProfile
+	profilesMap := make(map[string]DiskProfile)
+	for _, profile := range profiles {
+		profilesMap[profile.Id] = DiskProfile{
+			Alias:    profile.Alias,
+			Website:  profile.Website,
+			Username: profile.Username,
+			Email:    profile.Email,
+		}
 	}
+	// Encode the map
+	err = encoder.Encode(profilesMap)
+	if err != nil {
+		exit(err, "I can't save the config file located at "+configPath+" 😓")
+	}
+
 }
 
 // Add a profile to the config file and return the id
@@ -154,23 +175,16 @@ func AddProfile(profile Profile) string {
 		exit(err, "Sorry, I can't generate an id 😓")
 	}
 
-	toSave := DiskProfile{
-		Alias:    profile.Alias,
-		Website:  profile.Website,
-		Username: profile.Username,
-		Email:    profile.Email,
-	}
 	err = keyring.Set(serviceName, id, profile.Password)
 	if err != nil {
 		exit(err, "Sorry, I can't save the password in the keyring 😓")
 	}
+
+	// When the function is called, the id is empty
+	// So we set it here
+	profile.Id = id
 	profiles = append(profiles, profile)
 
-	// Add profile to the database
-	err = config.Set(id, toSave)
-	if err != nil {
-		exit(err, "Sorry, I can't save the profile in profiles.toml 😓")
-	}
 	saveFile()
 	return id
 }
@@ -182,12 +196,14 @@ func GetProfiles() *[]Profile {
 
 func RemoveProfile(id string) {
 	// Remove profile from the database
-	err := config.Set(id, nil)
-	if err != nil {
-		exit(err, "Sorry, I can't remove the profile from profiles.toml 😓")
+	for i, profile := range profiles {
+		if profile.Id == id {
+			profiles = append(profiles[:i], profiles[i+1:]...)
+			break
+		}
 	}
 	// Remove password from the keyring
-	err = keyring.Delete(serviceName, id)
+	err := keyring.Delete(serviceName, id)
 	if err != nil {
 		exit(err, "Sorry, I can't remove the password from the keyring 😓")
 	}
@@ -221,7 +237,7 @@ func GetProfileIDFromPath(path string) string {
 		profileIDSchema := SchemaGutConf{}
 
 		// Decode ID in TOML
-		t := tomlreader.NewDecoder(f)
+		t := toml.NewDecoder(f)
 		_, err = t.Decode(&profileIDSchema)
 		if err != nil {
 			print.Message("Sorry, I can't read the .gut file 😓", print.Error)
