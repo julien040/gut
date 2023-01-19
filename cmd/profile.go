@@ -22,8 +22,6 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/julien040/gut/src/controller"
 	"github.com/spf13/cobra"
 )
@@ -44,12 +42,10 @@ var profileAddCmd = &cobra.Command{
 }
 
 var profileRemoveCmd = &cobra.Command{
-	Use:   "remove [profile name]",
-	Short: "Remove a profile",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("profile remove called")
-	},
-	Aliases: []string{"rm"},
+	Use:     "remove [profile name]",
+	Short:   "Remove a profile",
+	Run:     controller.ProfilesRemove,
+	Aliases: []string{"rm", "delete", "del"},
 }
 
 var profileListCmd = &cobra.Command{
