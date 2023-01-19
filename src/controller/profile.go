@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"strings"
 
 	"os"
 	"path/filepath"
@@ -295,6 +296,52 @@ func ProfilesList(cmd *cobra.Command, args []string) {
 		}
 	}
 }
+
+func ProfilesRemove(cmd *cobra.Command, args []string) {
+	// Get all the profiles
+	profiles := profile.GetProfiles()
+
+	// Check if there is at least one profile
+	if len(*profiles) == 0 {
+		print.Message("You don't have any profile yet 😓 \nCreate one with gut profile add", print.Info)
+		return
+
+	}
+	var profileId string
+	// Check first arg
+	if len(args) == 0 {
+		// Ask the user to select a profile
+		profileSelected := selectProfile("", false)
+		profileId = profileSelected.Id
+	} else {
+		// Check if the profile exists
+		// We join the args because the alias can be multiple words
+		alias := strings.Join(args, " ")
+		profileSelected := profile.IsAliasAlreadyUsed(alias)
+		if !profileSelected {
+			print.Message("Sorry, I can't find the profile "+args[0], print.Error)
+			return
+		}
+		for _, val := range *profiles {
+			if val.Alias == alias {
+				profileId = val.Id
+			}
+		}
+	}
+
+	// Prompt the user to confirm the deletion
+	res, err := prompt.InputBool("Are you sure you want to delete this profile ?", false)
+	if err != nil {
+		exitOnError("Sorry, I can't get your answer", err)
+	}
+	if !res {
+		return
+	}
+	profile.RemoveProfile(profileId)
+
+	print.Message("I've successfully removed your profile 😎", print.Success)
+}
+
 func associateProfileToPath(profileArg profile.Profile, path string) {
 	// Set Profile Data in git config
 	executor.SetUserConfig(path, profileArg.Username, profileArg.Email)
