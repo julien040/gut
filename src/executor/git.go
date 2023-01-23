@@ -25,10 +25,62 @@ func runCommand(arg ...string) error {
 	return cmd.Run()
 }
 
+// Execute a command using the exec package and return the error if any
+// Print output only if it's stderr
+// Return output as a string
+func runCommandWithOutput(arg ...string) (string, error) {
+	wd, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	cmd := exec.Command(arg[0], arg[1:]...)
+	cmd.Dir = wd
+	cmd.Stderr = os.Stderr
+	out, err := cmd.Output()
+
+	return string(out), err
+}
+
 // Check if git is installed on the system
 func IsGitInstalled() bool {
 	_, err := exec.LookPath("git")
 	return err == nil
+}
+
+// Execute git pull using the exec package
+func GitPull(username string, password string, remote string) error {
+	// Parse the URL
+	parsedURL, err := url.Parse(remote)
+	if err != nil {
+		return err
+	}
+	// Set the username and password
+	parsedURL.User = url.UserPassword(username, password)
+
+	// Execute the command
+	err = runCommand("git", "pull", parsedURL.String())
+	return err
+}
+
+// Set git config pull.rebase true only if not set to a value
+func GitConfigPullRebaseTrueOnlyIfNotSet() error {
+
+	// Check if the value is set
+	out, err := runCommandWithOutput("git", "config", "pull.rebase")
+	if err != nil {
+		// If not set, Git will return exit status 1
+		if err.Error() != "exit status 1" {
+			return err
+		}
+
+	}
+	// If the value is set, return
+	if out != "" {
+		return nil
+	}
+
+	// Set the value to true
+	return runCommand("git", "config", "pull.rebase", "true")
 }
 
 // Execute git pull --rebase using the exec package

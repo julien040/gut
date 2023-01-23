@@ -31,7 +31,7 @@ func Sync(cmd *cobra.Command, args []string) {
 		exitOnError("Sorry, I can't check if there are uncommited changes 😢", err)
 	}
 	if !clean {
-		exitOnError("Uh oh, there are uncommited changes. Please commit them before syncing 😢", nil)
+		exitOnError("Uh oh, there are uncommited changes. Please commit them before syncing with `gut save`", nil)
 	}
 
 	// Get the remote
@@ -74,29 +74,69 @@ func syncRepo(path string, remote executor.Remote, requestProfile bool) error {
 	if err == transport.ErrAuthorizationFailed || err == transport.ErrAuthenticationRequired {
 		print.Message("Uh oh, your credentials are wrong 😢. Please select another profile.", print.Error)
 		return syncRepo(path, remote, true)
+
 	} else if err == git.ErrNonFastForwardUpdate {
-		print.Message("Uh oh, there is a conflict 😢. Currently, Gut doesn't support conflict resolution. Please resolve the conflict manually.", print.Error)
-		print.Message("You can use the git cli to resolve the conflict. \nOr you can rebase if you want\n	git pull -r "+remote.Name+" [branch] "+" \n	git push "+remote.Name+" [branch] ", print.None)
-		os.Exit(1)
+		// Try to do Git Pull if installed
+
+		// Check if git is installed
+		gitInstalled := executor.IsGitInstalled()
+		if gitInstalled {
+			print.Message("I couldn't resolve this as a fast-forward merge. I'll try to do a git pull instead with the git cli", print.None)
+
+			// Set git config to rebase if the user didn't set anything else
+			err := executor.GitConfigPullRebaseTrueOnlyIfNotSet()
+			if err != nil {
+				exitOnError("Sorry, I can't set the git config to rebase the merge", err)
+			}
+
+			err = executor.GitPull(profileLocal.Username, profileLocal.Password, remote.Url)
+			if err == nil {
+				print.Message("Pull successful 🎉", print.Success)
+				// We then push
+				shouldReturn, returnValue := push(remote, path, profileLocal)
+				if shouldReturn {
+					return returnValue
+				}
+
+			} else {
+				print.Message("Sorry, I can't pull the repository 😢", print.Error)
+				print.Message("If there is a conflict, you can use the git cli to resolve it. \nOr you can rebase if you want\n	git pull -r "+remote.Name+" [branch] "+" \n	git push "+remote.Name+" [branch] ", print.None)
+				os.Exit(1)
+			}
+		} else {
+			print.Message("Sorry, I can't pull the repository 😢. I couldn't resolve this as a fast-forward merge and I can't use the git cli because it's not installed", print.Error)
+			print.Message("Please install git (https://git-scm.com/downloads) and try again", print.None)
+			os.Exit(1)
+		}
 
 	} else if err == git.NoErrAlreadyUpToDate || err == transport.ErrEmptyRemoteRepository || err == nil { // If there is nothing to pull, we push
 		print.Message("Pull successful 🎉", print.Success)
 
-		spinnerPush := spinner.New(spinner.CharSets[9], 100)
-		spinnerPush.Prefix = "Pushing the repository to " + remote.Name + " "
-		spinnerPush.Start()
-		err := executor.Push(path, remote.Name, profileLocal.Username, profileLocal.Password)
-		spinnerPush.Stop()
-
-		if err == git.NoErrAlreadyUpToDate || err == nil { // If there is nothing to push, we exit
-			print.Message("I've successfully synced your repository 🎉", print.Success)
-			return nil
-		} else {
-			// If there is another unknown error, we exit
-			exitOnError("Sorry, I can't push the repository 😢", err)
+		// If there is nothing to push, we exit
+		// If there is another unknown error, we exit
+		shouldReturn, returnValue := push(remote, path, profileLocal)
+		if shouldReturn {
+			return returnValue
 		}
 	} else { // If there is another unknown error, we exit
 		exitOnError("Sorry, I can't pull the repository 😢", err)
 	}
 	return nil
+}
+
+func push(remote executor.Remote, path string, profileLocal profile.Profile) (bool, error) {
+	spinnerPush := spinner.New(spinner.CharSets[9], 100)
+	spinnerPush.Prefix = "Pushing the repository to " + remote.Name + " "
+	spinnerPush.Start()
+	err := executor.Push(path, remote.Name, profileLocal.Username, profileLocal.Password)
+	spinnerPush.Stop()
+
+	if err == git.NoErrAlreadyUpToDate || err == nil {
+		print.Message("I've successfully synced your repository 🎉", print.Success)
+		return true, nil
+	} else {
+
+		exitOnError("Sorry, I can't push the repository 😢", err)
+	}
+	return false, nil
 }
