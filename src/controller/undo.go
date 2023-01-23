@@ -64,6 +64,7 @@ func Undo(cmd *cobra.Command, args []string) {
 		}
 		if !res {
 			print.Message("Ok, I won't do anything", print.Info)
+			return
 		}
 
 		for _, val := range resetFiles {
