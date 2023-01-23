@@ -145,3 +145,16 @@ func ListCommit(path string) ([]object.Commit, error) {
 	})
 	return commits, nil
 }
+
+func GetHeadHash(path string) (string, error) {
+	repo, err := OpenRepo(path)
+	if err != nil {
+		return "", err
+	}
+	// Get the branch
+	ref, err := repo.Head()
+	if err != nil {
+		return "", err
+	}
+	return ref.Hash().String(), nil
+}
