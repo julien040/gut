@@ -116,7 +116,7 @@ func Save(cmd *cobra.Command, args []string) {
 		exitOnError("Error while committing", err)
 	}
 	print.Message("\n\nChanges updated successfully with commit hash: "+Result.Hash, print.Success)
-	fmt.Printf("%d files changed, %d insertions(+), %d deletions(-)\n", Result.FilesUpdated, Result.FilesAdded, Result.FilesDeleted)
+	fmt.Printf("%d files changed, %d files added, %d files deleted\n", Result.FilesUpdated, Result.FilesAdded, Result.FilesDeleted)
 
 }
 
