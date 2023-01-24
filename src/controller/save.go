@@ -108,6 +108,19 @@ func Save(cmd *cobra.Command, args []string) {
 	title := cmd.Flag("title").Value.String()
 	message := cmd.Flag("message").Value.String()
 
+	commitMessage := promptCommitMessage(title, message)
+
+	// Commit the changes
+	Result, err := executor.Commit(wd, commitMessage)
+	if err != nil {
+		exitOnError("Error while committing", err)
+	}
+	print.Message("\n\nChanges updated successfully with commit hash: "+Result.Hash, print.Success)
+	fmt.Printf("%d files changed, %d insertions(+), %d deletions(-)\n", Result.FilesUpdated, Result.FilesAdded, Result.FilesDeleted)
+
+}
+
+func promptCommitMessage(title string, message string) string {
 	var answers struct {
 		Type        int
 		Titre       string
@@ -140,22 +153,15 @@ func Save(cmd *cobra.Command, args []string) {
 		answers.Description = message
 	}
 
-	err = survey.Ask(qs, &answers)
+	err := survey.Ask(qs, &answers)
 	if err != nil {
 		exitOnError("Sorry, I can't get your answers", err)
 	}
 
 	// Append the title to the body because git only accept a message.
 	// However, it's common that the first line is the title and the rest the body
-	commitMessage := computeCommitMessage(answers)
 
-	// Commit the changes
-	Result, err := executor.Commit(wd, commitMessage)
-	if err != nil {
-		exitOnError("Error while committing", err)
-	}
-	print.Message("\n\nChanges updated successfully with commit hash: "+Result.Hash, print.Success)
-	fmt.Printf("%d files changed, %d insertions(+), %d deletions(-)\n", Result.FilesUpdated, Result.FilesAdded, Result.FilesDeleted)
+	return computeCommitMessage(answers)
 
 }
 

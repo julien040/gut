@@ -22,7 +22,7 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"github.com/julien040/gut/src/print"
+	"github.com/julien040/gut/src/controller"
 	"github.com/spf13/cobra"
 )
 
@@ -34,9 +34,7 @@ var fixCmd = &cobra.Command{
 	1) Change last commit message
 	2) Commit on the wrong branch`,
 	Aliases: []string{"fixes", "bobthebuilder", "bob"},
-	Run: func(cmd *cobra.Command, args []string) {
-		print.Message("I'm sorry, but this feature is not yet implemented.", print.Error)
-	},
+	Run:     controller.Fix,
 }
 
 func init() {
