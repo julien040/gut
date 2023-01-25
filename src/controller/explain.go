@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"sort"
+
 	"github.com/spf13/cobra"
 
 	"github.com/julien040/gut/src/print"
@@ -15,7 +17,11 @@ func Explain(cmd *cobra.Command, args []string) {
 		for command := range explainMessage {
 			commands = append(commands, command)
 		}
-		//
+
+		// Sort the list
+		sort.Strings(commands)
+
+		// Ask the user to choose a command
 		res, err := prompt.InputSelect("Choose a command", commands)
 		if err != nil {
 			exitOnError("Sorry, I can't get your answer 😢", err)
@@ -38,22 +44,47 @@ func findExplainMessageFromArg(arg string) string {
 }
 
 var explainMessage = map[string]string{
-	"branch":   "This feature is not implemented yet",
-	"clone":    "This feature is not implemented yet",
-	"diff":     "This feature is not implemented yet",
-	"explain":  "This feature is not implemented yet",
-	"fix":      "This feature is not implemented yet",
-	"history":  "This feature is not implemented yet",
-	"ignore":   "This feature is not implemented yet",
-	"init":     "This feature is not implemented yet",
-	"merge":    "This feature is not implemented yet",
-	"profile":  "This feature is not implemented yet",
-	"remote":   "This feature is not implemented yet",
-	"revert":   "This feature is not implemented yet",
-	"save":     "This feature is not implemented yet",
-	"status":   "This feature is not implemented yet",
-	"switch":   "This feature is not implemented yet",
-	"sync":     "This feature is not implemented yet",
-	"undo":     "This feature is not implemented yet",
-	"whereami": "This feature is not implemented yet",
+	"branch": "Sorry I don't know how to explain this command yet",
+
+	"clone": `To run this command with git, you would do:
+	$ git clone <url> <directory>
+	`,
+
+	"diff": `To run this command with git, you would do:
+	$ git diff --staged`,
+
+	"explain": "42",
+
+	"fix": "Sorry I don't know how to explain this command yet",
+
+	"history": `To run this command with git, you would do:
+	$ git log --oneline`,
+
+	"ignore": "There is no git command for this",
+
+	"init": `To run this command with git, you would do:
+	$ git init`,
+
+	"merge": `To run this command with git, you would do:
+	$ git merge <branch>`,
+
+	"profile": "There is no git command for this",
+
+	"remote": "Sorry I don't know how to explain this command yet",
+
+	"revert": `To run this command with git, you would do:
+	$ git revert <commit>..HEAD`,
+
+	"save": `To run this command with git, you would do:
+	$ git commit -m "<message>"`,
+
+	"status": `To run this command with git, you would do:
+	$ git status`,
+	"switch": `To run this command with git, you would do:
+	$ git checkout <branch>`,
+	"sync": "Sorry I don't know how to explain this command yet",
+	"undo": `To run this command with git, you would do:
+	$ git reset HEAD --hard`,
+	"whereami": `To run this command with git, you would do:
+	$ git rev-parse HEAD && git rev-parse --abbrev-ref HEAD`,
 }
