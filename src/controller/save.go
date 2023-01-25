@@ -27,7 +27,6 @@ var gitEmoji = []emoji{
 	{"🔥", ":fire:", "Remove code or files"},
 	{"🚑", ":ambulance:", "Critical hotfix"},
 	{"📝", ":memo:", "Add or update documentation"},
-	{"🎨", ":art:", "Improve the format/structure of the code"},
 	{"⚡️", ":zap:", "Improve performance"},
 	{"🔒", ":lock:", "Fix security issues"},
 	{"🔖", ":bookmark:", "Release / Version tags"},
