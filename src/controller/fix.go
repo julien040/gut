@@ -46,7 +46,7 @@ func Fix(cmd *cobra.Command, args []string) {
 		print.Message("I have a command for that: gut revert", print.Info)
 
 	case "5) I forgot to add a change in the last commit":
-		amendCommit()
+		amendCommit(wd)
 
 	case "Cancel":
 
@@ -67,17 +67,6 @@ func amendMessage(path string) {
 	if !installed {
 		exitOnError("Sorry, I can't find Git on your computer", nil)
 	}
-
-	/* // Get remotes
-	remotes, err := executor.ListRemote()
-	if err != nil {
-		exitOnError("Sorry, I can't get the remotes", err)
-	}
-	if len(remotes) != 1 {
-		exitOnError("Sorry, I can't handle multiple remotes", nil)
-	}
-
-	remote := remotes[0] */
 
 	// Get head commit
 	head, err := executor.GetHeadHash(path)
@@ -131,11 +120,68 @@ func amendMessage(path string) {
 }
 
 func cherryPick() {
-	print.Message("For now, I can't move a commit to another branch", print.Error)
-	print.Message("Aha", print.None)
+	print.Message("This feature is not implemented yet", print.Error)
+	print.Message("However, you can do it manually with gut on a brand new branch", print.None)
+	print.Message(`	
+	# Switch to a new branch with the actual commit
+	gut switch [new branch name]
+	# Go back to the branch you want to fix
+	gut switch [branch name]
+	# Revert the state to an old commit
+	gut revert 
+	`, print.None)
 }
 
-func amendCommit() {
-	print.Message("For now, I can't add a change to the last commit", print.Error)
-	print.Message("Aha", print.None)
+func amendCommit(path string) {
+	// Check if Git is installed
+	installed := executor.IsGitInstalled()
+	if !installed {
+		exitOnError("Sorry, I can't find Git on your computer", nil)
+	}
+
+	// Get head commit
+	head, err := executor.GetHeadHash(path)
+	if err != nil {
+		exitOnError("Sorry, I can't get the head commit", err)
+	}
+
+	// Check if commit has been pushed
+	contains := executor.GitRemoteContainsHash(head)
+	if contains {
+		exitOnError("Sorry, I can't change the last commit content because it has been sync with the remote\nIt might break other people's work", nil)
+
+	}
+
+	// Add all files
+	err = executor.AddAll(path)
+	if err != nil {
+		exitOnError("Sorry, I can't add all files to the staging area", err)
+	}
+
+	// Check if there are uncommitted changes
+	clean, err := executor.IsWorkTreeClean(path)
+	if err != nil {
+		exitOnError("Sorry, I can't check if there are uncommitted changes", err)
+	}
+	if clean {
+		print.Message("Hey, you have nothing to change in your working tree. Bye!", print.None)
+		return
+	}
+
+	// Prompt a confirmation
+	res, err := prompt.InputBool("Are you sure you want me to change the last commit content?", true)
+	if err != nil {
+		exitOnError("Sorry, I can't read your answer", err)
+	}
+	if !res {
+		return
+	}
+
+	// Amend the commit
+	err = executor.GitCommitAmendNoEdit()
+	if err != nil {
+		exitOnError("Sorry, I can't amend the last commit", err)
+	}
+	print.Message("I've successfully changed the last commit content", print.Success)
+
 }

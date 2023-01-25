@@ -162,3 +162,8 @@ func GitFetchAll() error {
 func GitCommitAmend(message string) error {
 	return runCommand("git", "commit", "--amend", "-m", message)
 }
+
+// Amend the last commit but leave the message unchanged
+func GitCommitAmendNoEdit() error {
+	return runCommand("git", "commit", "--amend", "--no-edit")
+}
