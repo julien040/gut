@@ -27,7 +27,6 @@ var gitEmoji = []emoji{
 	{"🔥", ":fire:", "Remove code or files"},
 	{"🚑", ":ambulance:", "Critical hotfix"},
 	{"📝", ":memo:", "Add or update documentation"},
-	{"🎨", ":art:", "Improve the format/structure of the code"},
 	{"⚡️", ":zap:", "Improve performance"},
 	{"🔒", ":lock:", "Fix security issues"},
 	{"🔖", ":bookmark:", "Release / Version tags"},
@@ -101,6 +100,8 @@ func Save(cmd *cobra.Command, args []string) {
 	// Check if the current directory is a git repository
 	checkIfGitRepoInitialized(wd)
 
+	checkIfDetachedHead(wd)
+
 	// Check if the user config is set
 	verifUserConfig(wd)
 
@@ -108,6 +109,19 @@ func Save(cmd *cobra.Command, args []string) {
 	title := cmd.Flag("title").Value.String()
 	message := cmd.Flag("message").Value.String()
 
+	commitMessage := promptCommitMessage(title, message)
+
+	// Commit the changes
+	Result, err := executor.Commit(wd, commitMessage)
+	if err != nil {
+		exitOnError("Error while committing", err)
+	}
+	print.Message("\n\nChanges updated successfully with commit hash: "+Result.Hash, print.Success)
+	fmt.Printf("%d files changed, %d files added, %d files deleted\n", Result.FilesUpdated, Result.FilesAdded, Result.FilesDeleted)
+
+}
+
+func promptCommitMessage(title string, message string) string {
 	var answers struct {
 		Type        int
 		Titre       string
@@ -140,22 +154,15 @@ func Save(cmd *cobra.Command, args []string) {
 		answers.Description = message
 	}
 
-	err = survey.Ask(qs, &answers)
+	err := survey.Ask(qs, &answers)
 	if err != nil {
 		exitOnError("Sorry, I can't get your answers", err)
 	}
 
 	// Append the title to the body because git only accept a message.
 	// However, it's common that the first line is the title and the rest the body
-	commitMessage := computeCommitMessage(answers)
 
-	// Commit the changes
-	Result, err := executor.Commit(wd, commitMessage)
-	if err != nil {
-		exitOnError("Error while committing", err)
-	}
-	print.Message("\n\nChanges updated successfully with commit hash: "+Result.Hash, print.Success)
-	fmt.Printf("%d files changed, %d insertions(+), %d deletions(-)\n", Result.FilesUpdated, Result.FilesAdded, Result.FilesDeleted)
+	return computeCommitMessage(answers)
 
 }
 

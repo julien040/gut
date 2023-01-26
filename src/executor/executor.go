@@ -72,3 +72,15 @@ func IsWorkTreeClean(path string) (bool, error) {
 	}
 	return status.IsClean(), nil
 }
+
+func IsDetachedHead(path string) (bool, error) {
+	repo, err := OpenRepo(path)
+	if err != nil {
+		return false, err
+	}
+	head, err := repo.Head()
+	if err != nil {
+		return false, err
+	}
+	return head.Name() == "HEAD", nil
+}

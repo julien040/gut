@@ -22,6 +22,9 @@ func Sync(cmd *cobra.Command, args []string) {
 	// Check if the repository is initialized
 	checkIfGitRepoInitialized(wd)
 
+	// Check if the head is detached
+	checkIfDetachedHead(wd)
+
 	// Check if there is uncommited changes
 	// If there is, we ask the user to commit them
 	// If there is not, we exit

@@ -26,17 +26,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// fixCmd represents the fix command
-var fixCmd = &cobra.Command{
-	Use:   "fix",
-	Short: "Fix your mess",
-	Long: `A command to fix your mess. Available fixes:
-	1) Change last commit message
-	2) Commit on the wrong branch`,
-	Aliases: []string{"fixes", "bobthebuilder", "bob"},
-	Run:     controller.Fix,
+// explainCmd represents the explain command
+var explainCmd = &cobra.Command{
+	Use:   "explain [command]",
+	Short: "Get the equivalent git command",
+	Run:   controller.Explain,
 }
 
 func init() {
-	rootCmd.AddCommand(fixCmd)
+	rootCmd.AddCommand(explainCmd)
 }

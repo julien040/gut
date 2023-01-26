@@ -71,6 +71,8 @@ func InputSelect(message string, options []string) (string, error) {
 	prompt := promptui.Select{
 		Label: message,
 		Items: options,
+		// Set default to 6 in order to show the whole list in gut fix
+		Size: 6,
 	}
 	_, res, err := prompt.Run()
 	return res, err

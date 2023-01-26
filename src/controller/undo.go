@@ -23,6 +23,8 @@ func Undo(cmd *cobra.Command, args []string) {
 	}
 	checkIfGitRepoInitialized(wd)
 
+	checkIfDetachedHead(wd)
+
 	checkIfGitInstalled()
 
 	if len(args) == 0 {
@@ -64,6 +66,7 @@ func Undo(cmd *cobra.Command, args []string) {
 		}
 		if !res {
 			print.Message("Ok, I won't do anything", print.Info)
+			return
 		}
 
 		for _, val := range resetFiles {

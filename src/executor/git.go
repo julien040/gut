@@ -142,3 +142,28 @@ func GitCheckoutFileHead(file string) error {
 
 	return runCommand("git", "checkout", "HEAD", "--", file)
 }
+
+// Check if the remote contains the hash
+// Used to check if the commit is already pushed to the remote
+func GitRemoteContainsHash(hash string) bool {
+	output, err := runCommandWithOutput("git", "branch", "-r", "--contains", hash)
+	if err != nil {
+		return true
+	}
+	return output != ""
+}
+
+// Fetch all the branches from the remote
+func GitFetchAll() error {
+	return runCommand("git", "fetch", "--all")
+}
+
+// Amend the last commit with the message
+func GitCommitAmend(message string) error {
+	return runCommand("git", "commit", "--amend", "-m", message)
+}
+
+// Amend the last commit but leave the message unchanged
+func GitCommitAmendNoEdit() error {
+	return runCommand("git", "commit", "--amend", "--no-edit")
+}
