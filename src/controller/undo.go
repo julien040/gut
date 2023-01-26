@@ -23,6 +23,8 @@ func Undo(cmd *cobra.Command, args []string) {
 	}
 	checkIfGitRepoInitialized(wd)
 
+	checkIfDetachedHead(wd)
+
 	checkIfGitInstalled()
 
 	if len(args) == 0 {

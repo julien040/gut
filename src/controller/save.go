@@ -100,6 +100,8 @@ func Save(cmd *cobra.Command, args []string) {
 	// Check if the current directory is a git repository
 	checkIfGitRepoInitialized(wd)
 
+	checkIfDetachedHead(wd)
+
 	// Check if the user config is set
 	verifUserConfig(wd)
 

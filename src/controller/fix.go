@@ -27,6 +27,8 @@ func Fix(cmd *cobra.Command, args []string) {
 
 	checkIfGitRepoInitialized(wd)
 
+	checkIfDetachedHead(wd)
+
 	print.Message("You made a mess, huh? Let's fix it!", print.None)
 	res, err := prompt.InputSelect("What do you want to fix?", options)
 	if err != nil {

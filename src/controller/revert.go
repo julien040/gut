@@ -56,6 +56,9 @@ func Revert(cmd *cobra.Command, args []string) {
 	// Check if the current directory is a git repository
 	checkIfGitRepoInitialized(wd)
 
+	// Check if the repo is in a detached head state
+	checkIfDetachedHead(wd)
+
 	// Check if Git CLI is installed
 	checkIfGitInstalled()
 

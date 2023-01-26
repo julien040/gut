@@ -19,6 +19,8 @@ func Merge(cmd *cobra.Command, args []string) {
 	}
 	checkIfGitRepoInitialized(wd)
 
+	checkIfDetachedHead(wd)
+
 	// Check if working directory is clean
 	clean, err := executor.IsWorkTreeClean(wd)
 	if err != nil {
