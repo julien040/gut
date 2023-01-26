@@ -1,19 +1,18 @@
 package print
 
 import (
-	"fmt"
-
 	printColor "github.com/fatih/color"
 )
 
 type Color string
 
 const (
-	Error   Color = "red"
-	Warning Color = "yellow"
-	Info    Color = "blue"
-	Success Color = "green"
-	None    Color = "none"
+	Error    Color = "red"
+	Warning  Color = "yellow"
+	Info     Color = "blue"
+	Success  Color = "green"
+	Optional Color = "optional"
+	None     Color = "none"
 )
 
 // # Message prints a message with a color
@@ -27,19 +26,21 @@ const (
 //   - Info: blue
 //
 //   - Success: green
-func Message(message string, color Color) {
+func Message(message string, color Color, a ...interface{}) {
 	switch color {
 	case Error:
-		printColor.Red(message)
+		printColor.Red(message, a...)
 	case Warning:
-		printColor.Yellow(message)
+		printColor.Yellow(message, a...)
 	case Info:
-		printColor.Cyan(message)
+		printColor.Cyan(message, a...)
 	case Success:
-		printColor.Green(message)
+		printColor.Green(message, a...)
+	case Optional:
+		printColor.Black(message, a...)
 	case None:
-		fmt.Println(message)
+		printColor.White(message, a...)
 	default:
-		fmt.Println(message)
+		printColor.White(message, a...)
 	}
 }
