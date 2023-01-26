@@ -18,9 +18,6 @@ func Switch(cmd *cobra.Command, args []string) {
 	// Check if the current directory is a git repository
 	checkIfGitRepoInitialized(wd)
 
-	// Check if the HEAD is detached
-	checkIfDetachedHead(wd)
-
 	// Check if there are uncommitted changes
 	clean, err := executor.IsWorkTreeClean(wd)
 	if err != nil {
