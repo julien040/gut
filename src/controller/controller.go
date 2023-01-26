@@ -149,3 +149,89 @@ func openInBrowser(url string) error {
 	return err
 
 }
+
+func getWorkingDir() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		exitOnError("Oups, something went wrong while I was getting the current directory", err)
+	}
+	return dir
+}
+
+// Check if Repo is in detached HEAD state
+//
+// If it is, ask the user if he wants to go back to a branch or create a new one from the commit
+func checkIfDetachedHead(wd string) {
+	detached, err := executor.IsDetachedHead(wd)
+	if err != nil {
+		exitOnError("Oups, something went wrong while I was checking if the repo is in detached HEAD state", err)
+	}
+	if !detached {
+		return
+	}
+	print.Message("Oups, it seems like you are in lookout mode (detached HEAD state)", print.None)
+
+	// Ask the user if he wants to checkout a branch or create a new one
+	options := []string{"1) Switch back to a branch", "2) Create a new branch from this commit"}
+	val, err := prompt.InputSelect("What do you want to do?", options)
+	if err != nil {
+		exitOnError("Oups, something went wrong while I was getting the input", err)
+	}
+	switch val {
+	case "1) Switch back to a branch":
+		// Choose a branch to checkout
+		branches, err := executor.ListBranches(wd)
+		if err != nil {
+			exitOnError("Oups, something went wrong while I was listing the branches", err)
+		}
+		branch, err := prompt.InputSelect("Which branch do you want to checkout?", branches)
+		if err != nil {
+			exitOnError("Oups, something went wrong while I was getting the input", err)
+		}
+		// Checkout the branch
+		err = executor.CheckoutBranch(wd, branch)
+		if err != nil {
+			exitOnError("Oups, something went wrong while I was checking out the branch", err)
+		}
+		print.Message("You are now on branch %s and you can continue working 🎉", print.Success, branch)
+		os.Exit(0)
+
+	case "2) Create a new branch from this commit":
+		// Ask the user for the name of the new branch
+		var promptUser func() string
+		promptUser = func() string {
+			branchName, err := prompt.InputLine("How do you want to name the new branch?")
+			if err != nil {
+				exitOnError("Oups, something went wrong while I was getting the input", err)
+			}
+			if branchName == "" {
+				print.Message("Oups, you need to enter a name for the branch", print.Error)
+				return promptUser()
+			}
+			// Check if the branch already exists
+			exists, err := executor.CheckIfBranchExists(wd, branchName)
+			if err != nil {
+				exitOnError("Oups, something went wrong while I was checking if the branch already exists", err)
+			}
+			if exists {
+				print.Message("Oups, a branch with this name already exists", print.Error)
+				return promptUser()
+			}
+			return branchName
+		}
+		branchName := promptUser()
+
+		// Create the new branch
+		err = executor.CreateBranch(wd, branchName)
+		if err != nil {
+			exitOnError("Oups, something went wrong while I was creating the new branch", err)
+		}
+		print.Message("You are now on branch %s and you can continue working 🎉", print.Success, branchName)
+		os.Exit(0)
+
+	default:
+		exitOnError("Oups, something went wrong while I was getting the input", nil)
+
+	}
+
+}
