@@ -22,18 +22,22 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"github.com/julien040/gut/src/print"
+	"github.com/julien040/gut/src/controller"
 
 	"github.com/spf13/cobra"
 )
 
 // diffCmd represents the diff command
 var diffCmd = &cobra.Command{
-	Use:   "diff [file]...",
-	Short: "Show changes between HEAD and the working tree",
-	Run: func(cmd *cobra.Command, args []string) {
-		print.Message("I'm sorry, but this feature is not yet implemented.", print.Error)
-	},
+	Use:   "diff [from] [to]",
+	Short: "Show changes between commits, and the working tree (requires git)",
+	Long: `Show changes between commits, and the working tree (requires git)
+If no arguments are given, the diff will be between the current commit and the working tree.
+If one argument is given, the diff will be between the given commit and the working tree.
+If two arguments are given, the diff will be between the two given commits.`,
+	Args:    cobra.MaximumNArgs(2),
+	Aliases: []string{"diffs", "difference", "differences"},
+	Run:     controller.Diff,
 }
 
 func init() {
