@@ -33,7 +33,7 @@ func Message(message string, color Color, a ...interface{}) {
 	case Warning:
 		printColor.Yellow(message, a...)
 	case Info:
-		printColor.Cyan(message, a...)
+		printColor.Blue(message, a...)
 	case Success:
 		printColor.Green(message, a...)
 	case Optional:
