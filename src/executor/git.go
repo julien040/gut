@@ -167,3 +167,8 @@ func GitCommitAmend(message string) error {
 func GitCommitAmendNoEdit() error {
 	return runCommand("git", "commit", "--amend", "--no-edit")
 }
+
+// Add all the files to the index
+func GitAddAll() error {
+	return runCommand("git", "add", ".")
+}
