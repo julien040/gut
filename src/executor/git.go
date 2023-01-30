@@ -237,3 +237,8 @@ func GitDiffRef(ref1 string, ref2 string) (bool, error) {
 	return output == "", runCommandWithStdin("git", "diff", ref1, ref2)
 
 }
+
+// Delete a remote branch
+func GitDeleteRemoteBranch(remote string, branch string) error {
+	return runCommand("git", "push", remote, "--delete", branch)
+}
