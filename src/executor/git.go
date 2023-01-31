@@ -242,3 +242,21 @@ func GitDiffRef(ref1 string, ref2 string) (bool, error) {
 func GitDeleteRemoteBranch(remote string, branch string) error {
 	return runCommand("git", "push", remote, "--delete", branch)
 }
+
+// Get git reflog in a parsable format
+func gitReflog() (string, error) {
+	// We use --no-pager to avoid using less
+	// We use --no-color to prevent color codes from being added to the output
+	// We use --format=%gs to get only the subject of the action
+	// We use --format=%cd to get the date of the action
+	// We use --date=iso to get the date in ISO format
+	// We use :::: as a separator between the date and the subject
+
+	// Reference: https://git-scm.com/docs/pretty-formats
+	return runCommandWithOutput("git", "--no-pager", "reflog", "--format=%cd::::%gs", "--no-color", "--date=iso")
+}
+
+// Checkout the repo to a given hash
+func GitCheckout(hash string) error {
+	return runCommand("git", "checkout", hash)
+}
