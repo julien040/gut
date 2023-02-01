@@ -31,6 +31,11 @@ func Merge(cmd *cobra.Command, args []string) {
 
 	}
 
+	currentBranch, err := executor.GetCurrentBranch(wd)
+	if err != nil {
+		exitOnError("Sorry, I can't get the current branch 😢", err)
+	}
+
 	var branch string
 
 	askForBranch := func() string {
@@ -72,6 +77,12 @@ func Merge(cmd *cobra.Command, args []string) {
 		if err != nil {
 			exitOnError("Sorry, I can't check if the branch exists 😢", err)
 		}
+
+		if branch == currentBranch {
+			print.Message("You can't merge %s into itself 😢", print.Error, branch)
+			branch = askForBranch()
+		}
+
 		// If not, ask him
 		if !exists {
 			print.Message(fmt.Sprintf("I'm sorry, but the branch %s doesn't exist 😢", branch), print.Error)
@@ -80,11 +91,6 @@ func Merge(cmd *cobra.Command, args []string) {
 	} else {
 		// If not, ask him
 		branch = askForBranch()
-	}
-
-	currentBranch, err := executor.GetCurrentBranch(wd)
-	if err != nil {
-		exitOnError("Sorry, I can't get the current branch 😢", err)
 	}
 
 	// Prompt the user to sync his changes
