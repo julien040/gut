@@ -67,6 +67,7 @@ func CreateBranch(path string, branchName string) error {
 	err = worktree.Checkout(&git.CheckoutOptions{
 		Create: true,
 		Branch: plumbing.NewBranchReferenceName(branchName),
+		Keep:   true,
 	})
 	return err
 }
@@ -82,6 +83,7 @@ func CheckoutBranch(path string, branchName string) error {
 	}
 	err = worktree.Checkout(&git.CheckoutOptions{
 		Branch: plumbing.NewBranchReferenceName(branchName),
+		Force:  true,
 	})
 	return err
 

@@ -188,6 +188,22 @@ func checkIfDetachedHead(wd string) {
 		if err != nil {
 			exitOnError("Oups, something went wrong while I was getting the input", err)
 		}
+
+		// Check if the working tree is clean
+		clean, err := executor.IsWorkTreeClean(wd)
+		if err != nil {
+			exitOnError("I can't check if there are uncommitted changes", err)
+		}
+		if !clean {
+			res, err := prompt.InputBool("Uh oh, there are uncommitted changes. They might be lost if you switch branches. Do you want to continue?", false)
+			if err != nil {
+				exitOnError("That's a shame, I can't get your answer", err)
+			}
+			if !res {
+				print.Message("Okay, I won't switch branches", print.Info)
+				return
+			}
+		}
 		// Checkout the branch
 		err = executor.CheckoutBranch(wd, branch)
 		if err != nil {
