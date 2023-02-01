@@ -101,7 +101,7 @@ func BranchDelete(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	res, err := prompt.InputBool("Are you sure you want to delete the branch "+branchName+"?", false)
+	res, err := prompt.InputBool("Are you sure you want to delete the local branch "+branchName+"?", false)
 	if err != nil {
 		exitOnError("Sorry, I can't get your answer", err)
 	}
@@ -114,6 +114,30 @@ func BranchDelete(cmd *cobra.Command, args []string) {
 	err = executor.DeleteBranch(wd, branchName)
 	if err != nil {
 		exitOnError("I can't delete the branch", err)
+	}
+
+	// Delete the remote branch
+	installed := executor.IsGitInstalled()
+	if installed {
+		// Check if there is one remote
+		remotes, err := executor.ListRemote(wd)
+		if err != nil {
+			exitOnError("I can't list the remotes", err)
+		}
+		if len(remotes) == 1 {
+			remote := remotes[0]
+			res, err := prompt.InputBool("Do you want to delete the remote branch "+remote.Name+"/"+branchName+"?", false)
+			if err != nil {
+				exitOnError("Sorry, I can't get your answer", err)
+			}
+			if res {
+				err := executor.GitDeleteRemoteBranch(remote.Name, branchName)
+				if err != nil {
+					exitOnError("I can't delete the remote branch", err)
+				}
+			}
+
+		}
 	}
 
 	print.Message("The branch has been deleted", print.Success)

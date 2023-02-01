@@ -7,6 +7,8 @@
 package executor
 
 import (
+	"bufio"
+	"io"
 	"net/url"
 	"os"
 	"os/exec"
@@ -39,6 +41,36 @@ func runCommandWithOutput(arg ...string) (string, error) {
 	out, err := cmd.Output()
 
 	return string(out), err
+}
+
+// Iframe a command using the exec package and return the error if any
+func runCommandWithStdin(arg ...string) error {
+	wd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+
+	// Create a new reader from stdin
+	reader := bufio.NewReader(os.Stdin)
+
+	cmd := exec.Command(arg[0], arg[1:]...)
+	cmd.Dir = wd
+	cmd.Stderr = os.Stderr
+
+	read, err := cmd.StdinPipe()
+	if err != nil {
+		return err
+	}
+	// Pipe the reader to the command
+	go func() {
+		defer read.Close()
+		io.Copy(read, reader)
+	}()
+
+	// Same for stdout
+	cmd.Stdout = os.Stdout
+
+	return cmd.Run()
 }
 
 // Check if git is installed on the system
@@ -166,4 +198,47 @@ func GitCommitAmend(message string) error {
 // Amend the last commit but leave the message unchanged
 func GitCommitAmendNoEdit() error {
 	return runCommand("git", "commit", "--amend", "--no-edit")
+}
+
+// Add all the files to the index
+func GitAddAll() error {
+	return runCommand("git", "add", ".")
+}
+
+// Diff the index with the HEAD and return true if there is no diff
+func GitDiffIndexHead() (bool, error) {
+	// If there is no diff, output will be empty
+	output, err := runCommandWithOutput("git", "diff", "--cached", "HEAD")
+	if err != nil {
+		return false, err
+	}
+	return output == "", runCommandWithStdin("git", "diff", "--cached", "HEAD")
+}
+
+//
+
+// Diff the index with a given commit or branch and return true if there is no diff
+func GitDiffIndexCommit(commit string) (bool, error) {
+	// If there is no diff, output will be empty
+	output, err := runCommandWithOutput("git", "diff", "--cached", commit)
+	if err != nil {
+		return false, err
+	}
+	return output == "", runCommandWithStdin("git", "diff", "--cached", commit)
+}
+
+// Diff a ref to another ref and return true if there is no diff
+func GitDiffRef(ref1 string, ref2 string) (bool, error) {
+	// If there is no diff, output will be empty
+	output, err := runCommandWithOutput("git", "diff", ref1, ref2)
+	if err != nil {
+		return false, err
+	}
+	return output == "", runCommandWithStdin("git", "diff", ref1, ref2)
+
+}
+
+// Delete a remote branch
+func GitDeleteRemoteBranch(remote string, branch string) error {
+	return runCommand("git", "push", remote, "--delete", branch)
 }

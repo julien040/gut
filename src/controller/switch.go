@@ -18,18 +18,6 @@ func Switch(cmd *cobra.Command, args []string) {
 	// Check if the current directory is a git repository
 	checkIfGitRepoInitialized(wd)
 
-	// Check if the HEAD is detached
-	checkIfDetachedHead(wd)
-
-	// Check if there are uncommitted changes
-	clean, err := executor.IsWorkTreeClean(wd)
-	if err != nil {
-		exitOnError("I can't check if there are uncommitted changes", err)
-	}
-	if !clean {
-		exitOnError("Uh oh, there are uncommitted changes. Please commit them before switching branches", nil)
-	}
-
 	// Input the branch name
 	var branchName string
 	if len(args) == 0 {
@@ -64,6 +52,23 @@ func Switch(cmd *cobra.Command, args []string) {
 			return
 		}
 	} else { // If the branch exists, switch to it
+
+		// Check if the working tree is clean
+		clean, err := executor.IsWorkTreeClean(wd)
+		if err != nil {
+			exitOnError("I can't check if there are uncommitted changes", err)
+		}
+		// If not clean, ask the user if he wants to continue because the changes might be lost
+		if !clean {
+			res, err := prompt.InputBool("Uh oh, there are uncommitted changes. They might be lost if you switch branches. Do you want to continue?", false)
+			if err != nil {
+				exitOnError("That's a shame, I can't get your answer", err)
+			}
+			if !res {
+				print.Message("Okay, I won't switch branches", print.Info)
+				return
+			}
+		}
 		err = executor.CheckoutBranch(wd, branchName)
 		if err != nil {
 			exitOnError("I can't switch to the branch "+branchName, err)

@@ -2,6 +2,7 @@ package executor
 
 import (
 	"errors"
+	"sort"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -12,15 +13,36 @@ func ListBranches(path string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	branches, err := repo.Branches()
+	branchesIter, err := repo.Branches()
 	if err != nil {
 		return nil, err
 	}
-	var branchNames []string
-	err = branches.ForEach(func(branch *plumbing.Reference) error {
-		branchNames = append(branchNames, branch.Name().Short())
+
+	var branches []*plumbing.Reference
+
+	err = branchesIter.ForEach(func(branch *plumbing.Reference) error {
+		branches = append(branches, branch)
 		return nil
 	})
+
+	// Sort by commit time
+	sort.Slice(branches, func(i, j int) bool {
+		commitI, err := repo.CommitObject(branches[i].Hash())
+		if err != nil {
+			return false
+		}
+		commitJ, err := repo.CommitObject(branches[j].Hash())
+		if err != nil {
+			return false
+		}
+		return commitI.Committer.When.After(commitJ.Committer.When)
+	})
+
+	var branchNames []string
+
+	for _, branch := range branches {
+		branchNames = append(branchNames, branch.Name().Short())
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -45,6 +67,7 @@ func CreateBranch(path string, branchName string) error {
 	err = worktree.Checkout(&git.CheckoutOptions{
 		Create: true,
 		Branch: plumbing.NewBranchReferenceName(branchName),
+		Keep:   true,
 	})
 	return err
 }
@@ -60,6 +83,7 @@ func CheckoutBranch(path string, branchName string) error {
 	}
 	err = worktree.Checkout(&git.CheckoutOptions{
 		Branch: plumbing.NewBranchReferenceName(branchName),
+		Force:  true,
 	})
 	return err
 

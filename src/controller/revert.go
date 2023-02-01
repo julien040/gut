@@ -29,7 +29,7 @@ func chooseCommit(commits []object.Commit) object.Commit {
 	// Create the list of commits
 	choices := []string{}
 	for _, commit := range commits {
-		choices = append(choices, fmt.Sprintf("%s created by %s on %s" /* color.HiYellowString(commit.Hash.String()), */, color.HiCyanString(getTitleFromCommit(commit.Message)), commit.Author.Name, commit.Author.When.Format("Mon Jan 2 15:04:05")))
+		choices = append(choices, fmt.Sprintf("%s created by %s on %s (%s)" /* color.HiYellowString(commit.Hash.String()), */, color.HiCyanString(getTitleFromCommit(commit.Message)), commit.Author.Name, commit.Author.When.Format("Mon Jan 2 15:04:05"), color.HiYellowString(commit.Hash.String()[:7])))
 	}
 	// Ask the user to choose a commit
 	qs := &survey.Select{

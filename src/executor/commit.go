@@ -21,7 +21,23 @@ type CommitResult struct {
 	FilesDeleted int
 }
 
+// Add all files to the staging area
+//
+// If git is installed, use git add . to add all files. If not, use go-git
 func AddAll(path string) error {
+	// Check if git is installed
+	isGitInstalled := IsGitInstalled()
+	if isGitInstalled {
+		// Run git add . to add all files using git
+		// This is a workaround for the fact that go-git does not support .gitignore
+		err := GitAddAll()
+
+		// If git add . is successful, return
+		// Otherwise, use go-git to add all files
+		if err == nil {
+			return nil
+		}
+	}
 	repo, err := OpenRepo(path)
 	if err != nil {
 		return err
@@ -52,13 +68,8 @@ func Commit(path string, message string) (CommitResult, error) {
 	if err != nil {
 		return CommitResult{}, err
 	}
-	// Replace the .gitignore file with the one in the repo
-	replaceGitIgnore(w, filepath.Join(path, ".gitignore"))
-
 	// Add all files
-	err = w.AddWithOptions(&git.AddOptions{
-		All: true,
-	})
+	err = AddAll(path)
 	if err != nil {
 		return CommitResult{}, err
 	}
