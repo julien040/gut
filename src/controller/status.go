@@ -19,12 +19,22 @@ func Status(cmd *cobra.Command, args []string) {
 
 	checkIfGitRepoInitialized(wd)
 
-	/* --------------------------- Get current branch --------------------------- */
-	branch, err := executor.GetCurrentBranch(wd)
+	// Check if the head is detached
+	detached, err := executor.IsDetachedHead(wd)
 	if err != nil {
-		exitOnError("Sorry, I can't get the current branch 😢", err)
+		exitOnError("Sorry, I can't check if the HEAD is detached 😢", err)
 	}
-	fmt.Printf("On branch %s\n", color.HiGreenString(branch))
+
+	/* --------------------------- Get current branch --------------------------- */
+	if detached {
+		fmt.Println("HEAD is detached (lookout mode)")
+	} else {
+		branch, err := executor.GetCurrentBranch(wd)
+		if err != nil {
+			exitOnError("Sorry, I can't get the current branch 😢", err)
+		}
+		fmt.Printf("On branch %s\n", color.HiGreenString(branch))
+	}
 
 	/* --------------------------- Get status of files -------------------------- */
 	status, err := executor.GetStatus(wd)
