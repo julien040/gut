@@ -22,20 +22,6 @@ import (
 	"github.com/julien040/gut/src/prompt"
 )
 
-// An helper function to exit the program if an error occurs
-func exitOnError(str string, err error) {
-	fmt.Println("")
-	if str != "" {
-		print.Message(str, print.Error)
-	}
-	if err != nil {
-		fmt.Printf("Error message: %s\n", err)
-		print.Message("If this error persists, please open an issue on GitHub: https://github.com/julien040/gut/issues/new", print.None)
-	}
-
-	os.Exit(1)
-}
-
 // Return true if the string is a valid URL for git
 func checkURL(str string) bool {
 	parsed, err := url.Parse(str)
