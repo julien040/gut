@@ -10,12 +10,12 @@ import (
 )
 
 var (
-	ErrorReadInput = GutError{
-		Message: "Sorry, I can't read your input",
+	errorReadInput = GutError{
+		Message: "This is embarrassing, I can't read your input",
 		Code:    1,
 		Err:     errors.New("error reading input"),
 	}
-	ErrorWorkingTreeNotClean = GutError{
+	errorWorkingTreeNotClean = GutError{
 		Message: "I can't continue further because the working tree is not clean",
 		Code:    2,
 		Err:     errors.New("working tree not clean"),
@@ -46,6 +46,11 @@ func getLinkForError(GutError GutError) string {
 	return fmt.Sprintf("https://gut.dev/error/%d", GutError.Code)
 }
 
+// Same as exitOnError but with a GutError
+//
+// # This function will print the error message and the link to the error page
+//
+// This should be used when the error is known and can be resolved by the user
 func exitOnKnownError(typeOfError GutError, err error) {
 	fmt.Println("")
 	if err != nil {

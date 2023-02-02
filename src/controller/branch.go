@@ -59,7 +59,7 @@ func BranchDelete(cmd *cobra.Command, args []string) {
 	if !clean {
 		res, err := prompt.InputBool("Uh oh, there are uncommitted changes. They might be lost if you delete the branch. Do you want to continue?", false)
 		if err != nil {
-			exitOnError("That's a shame, I can't get your answer", err)
+			exitOnKnownError(errorReadInput, err)
 		}
 		if !res {
 			print.Message("Okay, I won't delete the branch", print.Info)
@@ -72,7 +72,7 @@ func BranchDelete(cmd *cobra.Command, args []string) {
 	if len(args) == 0 {
 		res, err := prompt.InputLine("Branch to delete: ")
 		if err != nil {
-			exitOnError("Sorry, I can't get your answer", err)
+			exitOnKnownError(errorReadInput, err)
 		}
 		branchName = res
 	} else {
@@ -103,7 +103,7 @@ func BranchDelete(cmd *cobra.Command, args []string) {
 
 	res, err := prompt.InputBool("Are you sure you want to delete the local branch "+branchName+"?", false)
 	if err != nil {
-		exitOnError("Sorry, I can't get your answer", err)
+		exitOnKnownError(errorReadInput, err)
 	}
 	if !res {
 		print.Message("Okay, I won't delete the branch", print.Info)
@@ -128,7 +128,7 @@ func BranchDelete(cmd *cobra.Command, args []string) {
 			remote := remotes[0]
 			res, err := prompt.InputBool("Do you want to delete the remote branch "+remote.Name+"/"+branchName+"?", false)
 			if err != nil {
-				exitOnError("Sorry, I can't get your answer", err)
+				exitOnKnownError(errorReadInput, err)
 			}
 			if res {
 				err := executor.GitDeleteRemoteBranch(remote.Name, branchName)

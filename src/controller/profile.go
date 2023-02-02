@@ -332,7 +332,7 @@ func ProfilesRemove(cmd *cobra.Command, args []string) {
 	// Prompt the user to confirm the deletion
 	res, err := prompt.InputBool("Are you sure you want to delete this profile ?", false)
 	if err != nil {
-		exitOnError("Sorry, I can't get your answer", err)
+		exitOnKnownError(errorReadInput, err)
 	}
 	if !res {
 		return

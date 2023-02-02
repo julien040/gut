@@ -63,7 +63,7 @@ func Merge(cmd *cobra.Command, args []string) {
 		// Ask the user to choose a branch
 		res, err := prompt.InputSelect("Choose a branch to merge into "+currentBranch, options)
 		if err != nil {
-			exitOnError("Sorry, I can't get your answer 😢", err)
+			exitOnKnownError(errorReadInput, err)
 		}
 
 		return res
@@ -98,7 +98,7 @@ func Merge(cmd *cobra.Command, args []string) {
 	promptUserToSync := func() {
 		res, err := prompt.InputBool("Would you like to sync your changes?", true)
 		if err != nil {
-			exitOnError("Sorry, I can't get your answer 😢", err)
+			exitOnKnownError(errorReadInput, err)
 		}
 		if res {
 			// Run sync command

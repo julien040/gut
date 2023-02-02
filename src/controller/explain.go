@@ -24,7 +24,7 @@ func Explain(cmd *cobra.Command, args []string) {
 		// Ask the user to choose a command
 		res, err := prompt.InputSelect("Choose a command", commands)
 		if err != nil {
-			exitOnError("Sorry, I can't get your answer 😢", err)
+			exitOnKnownError(errorReadInput, err)
 		}
 		arg = res
 

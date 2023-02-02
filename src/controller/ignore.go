@@ -77,7 +77,7 @@ func selectGitignoreTemplate(templates []ignoreTemplate) ignoreTemplate {
 	}
 	err := survey.AskOne(prompt, &selectedTemplate)
 	if err != nil {
-		exitOnError("Sorry, I can't get your input 😓", err)
+		exitOnKnownError(errorReadInput, err)
 	}
 	return templates[selectedTemplate]
 }
@@ -202,7 +202,7 @@ func Ignore(cmd *cobra.Command, args []string) {
 			print.Message("If you plan to use the git CLI, you might want to untrack the files that are already tracked by git.", print.Info)
 			res, err := prompt.InputBool("Do you want me to run the command for you?", true)
 			if err != nil {
-				exitOnError("Sorry, I couldn't get your input 😓", err)
+				exitOnKnownError(errorReadInput, err)
 			}
 			if res {
 				err := executor.GitRmCached()

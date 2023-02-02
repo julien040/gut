@@ -30,7 +30,7 @@ func Undo(cmd *cobra.Command, args []string) {
 	if len(args) == 0 {
 		res, err := prompt.InputBool("This will revert your working tree back to the state of the last commit. Any changes you made after the last commit will be lost. Are you sure you want to continue?", false)
 		if err != nil {
-			exitOnError("Sorry, I can't get your answer", err)
+			exitOnKnownError(errorReadInput, err)
 		}
 		if !res {
 			print.Message("Ok, I won't do anything", print.Info)
@@ -62,7 +62,7 @@ func Undo(cmd *cobra.Command, args []string) {
 		}
 		res, err := prompt.InputBool(fmt.Sprintf("I will revert %d files to the last commit. Are you sure you want to continue?", len(resetFiles)), false)
 		if err != nil {
-			exitOnError("Sorry, I can't get your answer", err)
+			exitOnKnownError(errorReadInput, err)
 		}
 		if !res {
 			print.Message("Ok, I won't do anything", print.Info)

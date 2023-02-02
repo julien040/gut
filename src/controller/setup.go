@@ -19,7 +19,7 @@ func SetupAuth(cmd *cobra.Command, args []string) {
 	if id != "" {
 		val, err := prompt.InputBool("This repository is already associated with a profile. Do you want to change it?", true)
 		if err != nil {
-			exitOnError("Oups, something went wrong while getting the input", err)
+			exitOnKnownError(errorReadInput, err)
 		}
 		if !val {
 			os.Exit(0)

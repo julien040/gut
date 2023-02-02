@@ -183,7 +183,7 @@ func checkIfDetachedHead(wd string) {
 		if !clean {
 			res, err := prompt.InputBool("Uh oh, there are uncommitted changes. They might be lost if you switch branches. Do you want to continue?", false)
 			if err != nil {
-				exitOnError("That's a shame, I can't get your answer", err)
+				exitOnKnownError(errorReadInput, err)
 			}
 			if !res {
 				print.Message("Okay, I won't switch branches", print.Info)
@@ -204,7 +204,7 @@ func checkIfDetachedHead(wd string) {
 		promptUser = func() string {
 			branchName, err := prompt.InputLine("How do you want to name the new branch?")
 			if err != nil {
-				exitOnError("Oups, something went wrong while I was getting the input", err)
+				exitOnKnownError(errorReadInput, err)
 			}
 			if branchName == "" {
 				print.Message("Oups, you need to enter a name for the branch", print.Error)

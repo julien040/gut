@@ -173,7 +173,7 @@ func amendCommit(path string) {
 	// Prompt a confirmation
 	res, err := prompt.InputBool("Are you sure you want me to change the last commit content?", true)
 	if err != nil {
-		exitOnError("Sorry, I can't read your answer", err)
+		exitOnKnownError(errorReadInput, err)
 	}
 	if !res {
 		return

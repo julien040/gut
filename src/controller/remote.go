@@ -61,7 +61,7 @@ func addRemote(path string, origin bool) (executor.Remote, error) {
 	}
 	err = executor.AddRemote(path, answers.Name, answers.Url)
 	if err != nil {
-		exitOnError("Sorry, I can't add the remote", err)
+		exitOnKnownError(errorReadInput, err)
 	}
 	return executor.Remote{
 		Name: answers.Name,
@@ -87,7 +87,7 @@ func chooseRemote(path string) (executor.Remote, error) {
 	}
 	err = survey.AskOne(prompt, &remoteChoice)
 	if err != nil {
-		exitOnError("Sorry I can't get your answer", err)
+		exitOnKnownError(errorReadInput, err)
 	}
 	return remote[remoteChoice], nil
 
@@ -126,7 +126,7 @@ func Remote(cmd *cobra.Command, args []string) {
 		print.Message("No remote found", print.Warning)
 		res, err := prompt.InputBool("Do you want to add one ?", true)
 		if err != nil {
-			exitOnError("Sorry, I can't get your answer", err)
+			exitOnKnownError(errorReadInput, err)
 		}
 		if res {
 			remoteCreated, err := addRemote(wd, true)
@@ -212,7 +212,7 @@ func RemoteRemove(cmd *cobra.Command, args []string) {
 
 	res, err := prompt.InputBool("Are you sure you want to remove the remote "+remoteDeleteName+" ?", false)
 	if err != nil {
-		exitOnError("Sorry, I can't get your answer", err)
+		exitOnKnownError(errorReadInput, err)
 	}
 	if !res {
 		return

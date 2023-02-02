@@ -23,7 +23,7 @@ func Switch(cmd *cobra.Command, args []string) {
 	if len(args) == 0 {
 		res, err := prompt.InputLine("Switch to branch: ")
 		if err != nil {
-			exitOnError("Sorry, I can't get your answer", err)
+			exitOnKnownError(errorReadInput, err)
 		}
 		branchName = res
 	} else {
@@ -40,7 +40,7 @@ func Switch(cmd *cobra.Command, args []string) {
 	if !exists {
 		res, err := prompt.InputBool("Uh oh, the branch doesn't exist. Do you want me to create it?", true)
 		if err != nil {
-			exitOnError("That's a shame, I can't get your answer", err)
+			exitOnKnownError(errorReadInput, err)
 		}
 		if res {
 			err = executor.CreateBranch(wd, branchName)
@@ -62,7 +62,7 @@ func Switch(cmd *cobra.Command, args []string) {
 		if !clean {
 			res, err := prompt.InputBool("Uh oh, there are uncommitted changes. They might be lost if you switch branches. Do you want to continue?", false)
 			if err != nil {
-				exitOnError("That's a shame, I can't get your answer", err)
+				exitOnKnownError(errorReadInput, err)
 			}
 			if !res {
 				print.Message("Okay, I won't switch branches", print.Info)

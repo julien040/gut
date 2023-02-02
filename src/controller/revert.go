@@ -41,7 +41,7 @@ func chooseCommit(commits []object.Commit) object.Commit {
 	var answer int
 	err := survey.AskOne(qs, &answer)
 	if err != nil {
-		exitOnError("Sorry, I can't get your answer 😢", err)
+		exitOnKnownError(errorReadInput, err)
 	}
 
 	return commits[answer]

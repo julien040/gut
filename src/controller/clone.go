@@ -34,7 +34,7 @@ func Clone(cmd *cobra.Command, args []string) {
 			checkURL,
 		)
 		if err != nil {
-			exitOnError("Sorry, I can't get your answer", err)
+			exitOnKnownError(errorReadInput, err)
 		} else {
 			repo = str
 		}

@@ -156,7 +156,7 @@ func promptCommitMessage(title string, message string) string {
 
 	err := survey.Ask(qs, &answers)
 	if err != nil {
-		exitOnError("Sorry, I can't get your answers", err)
+		exitOnKnownError(errorReadInput, err)
 	}
 
 	// Append the title to the body because git only accept a message.
@@ -231,7 +231,7 @@ func verifUserConfig(path string) {
 	answers.Email = email
 	err = survey.Ask(qs, &answers)
 	if err != nil {
-		exitOnError("Sorry, I can't get your answers", err)
+		exitOnKnownError(errorReadInput, err)
 	}
 	err = executor.SetUserConfig(path, answers.Username, answers.Email)
 	if err != nil {
