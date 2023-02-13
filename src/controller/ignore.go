@@ -198,7 +198,11 @@ func Ignore(cmd *cobra.Command, args []string) {
 			We prompt the user if they want us to run the command for them.
 		*/
 		installed := executor.IsGitInstalled() // We prompt only if git is installed
-		if installed {
+
+		// Check if a repo is initialized
+		repoInitialized := executor.IsPathGitRepo(wd)
+
+		if installed && repoInitialized {
 			print.Message("If you plan to use the git CLI, you might want to untrack the files that are already tracked by git.", print.Info)
 			res, err := prompt.InputBool("Do you want me to run the command for you?", true)
 			if err != nil {
