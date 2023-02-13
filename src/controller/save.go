@@ -21,6 +21,7 @@ type emoji struct {
 // Some emojis are missing.
 // Should be fixed later
 var gitEmoji = []emoji{
+	{"", "", "No emoji"},
 	{"🎉", ":tada:", "Initial commit"},
 	{"✨", ":sparkles:", "Introduce new features"},
 	{"🐛", ":bug:", "Fix a bug"},
