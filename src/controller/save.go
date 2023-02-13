@@ -85,7 +85,6 @@ var gitEmoji = []emoji{
 	{"🔖", ":bookmark_tabs:", "Release / Version tags"},
 	{"👷", ":construction_worker:", "Add or update CI build system"},
 	{"💸", ":moneybag:", "Add or update financial, legal, or business documentation"},
-	{"📦", ":package:", "Add or update compiled files or packages"},
 	{"🦺", ":safety_vest:", "Add or update security"},
 	{"📈", ":chart_with_upwards_trend:", "Add or update analytics or track code"},
 }
