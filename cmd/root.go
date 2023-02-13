@@ -51,9 +51,19 @@ func Execute() {
 
 	// Run the command called by the user
 	err := rootCmd.Execute()
+
+	// Log the command called by the user
+	if len(os.Args) > 1 {
+		telemetry.LogCommand(os.Args[1])
+	} else {
+		telemetry.LogCommand("gut")
+	}
+
+	// Exit with error code 1 if an error occured
 	if err != nil {
 		os.Exit(1)
 	}
+
 }
 
 func promptForTelemetry() {
