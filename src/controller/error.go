@@ -43,7 +43,7 @@ func exitOnError(str string, err error) {
 }
 
 func getLinkForError(GutError GutError) string {
-	return fmt.Sprintf("https://gut.dev/error/%d", GutError.Code)
+	return fmt.Sprintf("https://gut-cli.dev/error/%d", GutError.Code)
 }
 
 // Same as exitOnError but with a GutError
