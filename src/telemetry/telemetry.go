@@ -113,14 +113,23 @@ func SetConsentState(state bool) {
 	}
 	defer consentFile.Close()
 
-	// Write the consent state to the file
-	_, err = consentFile.Write([]byte(fmt.Sprintf("telemetry = %t", state)))
+	/*
+		I don't know why, but I can't use writeString() to write to the file.
+		It would write Telemetry = truee with two e at the end.
+		I can't find why, so I use a struct to write to the file.
+	*/
+	type ToWrite struct {
+		Telemetry bool
+	}
+
+	err = toml.NewEncoder(consentFile).Encode(ToWrite{Telemetry: state})
 	if err != nil {
 		exit(err, "I can't write to the consent file 😓 at "+consentPath)
 	}
 
 	// Update the telemetryEnabled variable
 	telemetryEnabled = state
+	consentStateKnown = true
 }
 
 type Event struct {
