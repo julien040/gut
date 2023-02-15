@@ -41,6 +41,7 @@ var gitEmoji = []emoji{
 	{"📌", ":pushpin:", "Pin dependencies to specific versions"},
 	{"♻️", ":recycle:", "Refactor code"},
 	{"➖", ":heavy_minus_sign:", "Remove a dependency"},
+	{"➕", ":heavy_plus_sign:", "Add a dependency"},
 	{"🐧", ":penguin:", "Fix something on Linux"},
 	{"🍎", ":apple:", "Fix something on macOS"},
 	{"🏁", ":checkered_flag:", "Fix something on Windows"},
