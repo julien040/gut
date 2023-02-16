@@ -26,13 +26,62 @@ builds:
 
 project_name: gut
 
+nfpms:
+  - id: gut
+    package_name: gut
+    vendor: Julien
+    homepage: https://gut-cli.dev
+    maintainer: Julien <contact@julienc.me>
+    description: Gut is an easy to use Git client for the command line.
+    license: MIT
+    formats:
+      - deb
+      - rpm
+    dependencies:
+      - git
+      - bash
+
+snapcrafts:
+  - id: gut
+    name: gut
+    summary: An easy to use Git client.
+    description: Gut is an easy to use Git client for the command line. It follows a consistent naming convention and provides a simple way to manage your Git repositories.
+    license: MIT
+
+#chocolateys:
+#  - owners: Julien CAGNIART
+#    authors: Julien CAGNIART
+#    description: Gut is an easy to use Git client for the command line.
+#    project_url: https://gut-cli.dev
+#    license_url: https://github.com/julien040/gut/blob/master/LICENSE
+#    icon_url: https://gut-cli.dev/favicon.png
+#    project_source_url: https://github.com/julien040/gut
+#    docs_url: https://gut-cli.dev/docs
+#    bug_tracker_url: https://github.com/julien040/gut/issues
+#    tags: git cli version-control gut
+#    summary: An easy to use Git client.
+#    release_notes: https://github.com/julien040/gut/releases/tag/{{ .Tag }}
+#    api_key: "{{ .Env.CHOCOLATEY_API_KEY }}"
+
+brews:
+  - tap:
+      owner: julien040
+      name: gut-tap
+    commit_author:
+      name: gut-bot
+      email: contact@gut-cli.dev
+    homepage: https://gut-cli.dev
+    description: Gut is an easy to use Git client for the command line.
+    license: MIT
+    dependencies:
+      - git
+
 release:
   github:
     owner: julien040
     name: gut
   draft: true
   prerelease: auto
-  name_template: "{{.ProjectName}}-v{{.Version}}"
 
 archives:
   - format: tar.gz
