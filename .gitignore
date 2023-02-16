@@ -28,3 +28,6 @@ test/
 .DS_Store
 
 .gut
+
+# Build files
+dist/
