@@ -196,10 +196,14 @@ func isExecInPath(executable string) bool {
 //
 // We have to check because gnome-keyring doesn't work on a server (requires to fill in a popup)
 func checkGUIOnLinux() bool {
-	// Run Type Xorg
+	// Try to find the Xorg executable
 	// https://unix.stackexchange.com/a/237750 CC BY-SA 3.0
 
-	_, err := exec.Command("type", "Xorg").CombinedOutput()
+	// We use lookPath rather than "type Xorg" because I think type is a shell builtin
+	// Go'll try to find the executable in the path to run it
+
+	_, err := exec.LookPath("Xorg")
+	fmt.Println(err)
 	return err == nil
 
 }
