@@ -22,7 +22,7 @@ builds:
       - darwin
 
     hooks:
-      post: 'doppler run --command="bash scripts/notarise.sh {{ .Path }}" '
+      post: ['doppler run --command="bash scripts/notarise.sh {{ .Path }}" ']
 
 project_name: gut
 
@@ -39,7 +39,8 @@ nfpms:
       - rpm
     dependencies:
       - git
-      - bash
+      - gnome-keyring
+      - pass
 
 snapcrafts:
   - id: gut
