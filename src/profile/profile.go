@@ -4,11 +4,15 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
+	"path"
 	"path/filepath"
+	"runtime"
 
 	"github.com/julien040/gut/src/print"
 	nanoid "github.com/matoous/go-nanoid/v2"
 
+	keyringLinux "github.com/99designs/keyring"
 	"github.com/BurntSushi/toml"
 	keyring "github.com/zalando/go-keyring"
 )
@@ -34,12 +38,14 @@ var configPath string
 var profiles []Profile
 
 func exit(err error, message string) {
-	print.Message(message, "error")
+	print.Message(message, print.Error)
 	fmt.Println(err)
 	os.Exit(1)
 }
 
 const serviceName = "gut"
+
+var ring keyringLinux.Keyring
 
 // Init a config file for the profiles and load it into the config package
 func init() {
@@ -50,6 +56,12 @@ func init() {
 	}
 	// Path to the config file
 	configPath = filepath.Join(home, "/.gut/", "profiles.toml")
+
+	// Init keyring
+	ring, _ = keyringLinux.Open(keyringLinux.Config{
+		ServiceName:     serviceName,
+		AllowedBackends: []keyringLinux.BackendType{keyringLinux.PassBackend},
+	})
 
 	// Check if .gut directory exists
 	if _, err := os.Stat(filepath.Join(home, "/.gut/")); os.IsNotExist(err) {
@@ -95,9 +107,13 @@ func init() {
 
 	for key, val := range data {
 		// Get password from keyring
-		password, err := keyring.Get(serviceName, key)
+		var password string
+		var err error
+
+		password, err = retrievePassword(key)
 		if err != nil {
-			print.Message("The profile "+key+" doesn't have a password, I'll skip it", print.Warning)
+			print.Message("I can't retrieve the password for the profile %s, I'll skip it", print.Warning, key)
+			print.Message("Error: %s", print.Error, err.Error())
 			continue
 		}
 		val := val.(map[string]interface{})
@@ -127,7 +143,7 @@ func init() {
 			Id:       key,
 			Alias:    alias,
 			Username: username,
-			Password: string(password),
+			Password: password,
 			Website:  website,
 			Email:    email,
 		})
@@ -168,6 +184,190 @@ func saveFile() {
 
 }
 
+// Check if an executable is in the path
+//
+// Intended to check if a command is available
+func isExecInPath(executable string) bool {
+	_, err := exec.LookPath(executable)
+	return err == nil
+}
+
+// Check if the user is using a GUI on Linux. Returns true if yes.
+//
+// We have to check because gnome-keyring doesn't work on a server (requires to fill in a popup)
+func checkGUIOnLinux() bool {
+	// Run Type Xorg
+	// https://unix.stackexchange.com/a/237750 CC BY-SA 3.0
+
+	_, err := exec.Command("type", "Xorg").CombinedOutput()
+	return err == nil
+
+}
+
+// Check if a folder exists
+func checkFolderExists(path string) bool {
+	// https://gist.github.com/mattes/d13e273314c3b3ade33f
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return false
+	}
+	return true
+
+}
+
+// Save the password in the keyring
+//
+// If the user is using a GUI on Linux, we use the default gnome-keyring.
+// If not, we use pass.
+// On other OS, we use the default keyring defined by zalando/go-keyring
+func savePassword(id string, password string) {
+	// https://github.com/julien040/gut/issues/14
+	if runtime.GOOS == "linux" {
+		// Check if the user is using a GUI
+		// If yes, we use the default gnome-keyring
+		guiAvailable := checkGUIOnLinux()
+		if guiAvailable {
+			// Check if gnome-keyring is installed
+			if !isExecInPath("gnome-keyring-daemon") {
+				print.Message("To install gnome-keyring-daemon, run: sudo apt install gnome-keyring", print.None)
+				print.Message("If you use YUM, run: sudo yum install gnome-keyring", print.None)
+				exit(nil, "I can't find gnome-keyring-daemon in your path. Please install it 😓")
+			}
+
+			// We use the default gnome-keyring
+			err := keyring.Set(serviceName, id, password)
+			if err != nil {
+				exit(err, "I can't save the password in the keyring 😓")
+			}
+
+			// If not, we use pass.
+		} else {
+			// Check if pass is installed
+			if isExecInPath("pass") {
+				// We check if the password store exists
+				homeDir, err := os.UserHomeDir()
+				if err != nil {
+					exit(err, "I can't get your home directory 😓")
+				}
+				dirPassFolder := path.Join(homeDir, ".password-store")
+				if !checkFolderExists(dirPassFolder) {
+					// We prompt the user to create the password store
+					print.Message("Please set up a password store with pass. To do so, follow this guide: https://gut-cli.dev/error/setup-pass-store", print.None)
+
+					os.Exit(1)
+				} else {
+					// We save the password in the password store
+					err := ring.Set(keyringLinux.Item{
+						Key:   id,
+						Data:  []byte(password),
+						Label: "Password for " + id,
+					})
+					if err != nil {
+						exit(err, "I can't save the password in the keyring 😓")
+					}
+
+				}
+
+				// If not, we explain to the user how to install it on his distro
+			} else {
+				exit(errors.New("pass not installed"), "Please install pass with your package manager (https://www.passwordstore.org/#download)")
+			}
+		}
+
+	} else {
+		err := keyring.Set(serviceName, id, password)
+		if err != nil {
+			exit(err, "I can't save the password in the keyring 😓")
+		}
+	}
+}
+
+func retrievePassword(id string) (string, error) {
+	// https://github.com/julien040/gut/issues/14
+	if runtime.GOOS == "linux" {
+		// Check if the user is using a GUI
+		// If yes, we use the default gnome-keyring
+		guiAvailable := checkGUIOnLinux()
+		if guiAvailable {
+			// We use the default gnome-keyring
+			password, err := keyring.Get(serviceName, id)
+			return password, err
+		} else {
+			// If not, we use pass.
+			// Check if pass is installed
+			if isExecInPath("pass") {
+				// We check if the password store exists
+				homeDir, err := os.UserHomeDir()
+				if err != nil {
+					return "", errors.New("unable to get your home directory")
+				}
+				dirPassFolder := path.Join(homeDir, ".password-store")
+				if !checkFolderExists(dirPassFolder) {
+					// We prompt the user to create the password store
+					print.Message("Please set up a password store with pass. To do so, follow this guide: https://gut-cli.dev/error/setup-pass-store", print.None)
+					return "", errors.New("pass is not set up")
+				} else {
+					// We retrieve the password from the password store
+					password, err := ring.Get(id)
+					if err != nil {
+						print.Message("Unlock your password store with pass first", print.Info)
+						print.Message("You can do it with the following command:", print.Info)
+						print.Message("	pass show "+id, print.None)
+						print.Message("To learn more about this, follow this guide: https://gut-cli.dev/error/unlock-pass-store", print.None)
+						return "", errors.New("unable to retrieve the password from the keyring")
+					}
+					return string(password.Data), nil
+				}
+			} else {
+				print.Message("To install pass, follow this guide: https://www.passwordstore.org/#download", print.None)
+				return "", errors.New("pass not installed")
+			}
+		}
+
+	} else {
+		password, err := keyring.Get(serviceName, id)
+		if err != nil {
+			return "", err
+		}
+		return password, nil
+	}
+}
+
+func deletePassword(id string) error {
+	if runtime.GOOS == "linux" {
+		// Check if the user is using a GUI
+		// If yes, we use the default gnome-keyring
+		guiAvailable := checkGUIOnLinux()
+		if guiAvailable {
+			// We use the default gnome-keyring
+			return keyring.Delete(serviceName, id)
+		} else {
+			// If not, we use pass.
+			// Check if pass is installed
+			if isExecInPath("pass") {
+				// We check if the password store exists
+				homeDir, err := os.UserHomeDir()
+				if err != nil {
+					return errors.New("unable to get your home directory")
+				}
+				dirPassFolder := path.Join(homeDir, ".password-store")
+				if !checkFolderExists(dirPassFolder) {
+					// We prompt the user to create the password store
+					return errors.New("pass is not set up")
+				} else {
+					// We delete the password from the password store
+					return ring.Remove(id)
+				}
+			} else {
+				fmt.Println("To install pass, follow this guide: https://www.passwordstore.org/#download")
+				return errors.New("pass not installed")
+			}
+		}
+
+	} else {
+		return keyring.Delete(serviceName, id)
+	}
+}
+
 // Add a profile to the config file and return the id
 func AddProfile(profile Profile) string {
 	id, err := nanoid.New()
@@ -175,7 +375,9 @@ func AddProfile(profile Profile) string {
 		exit(err, "Sorry, I can't generate an id 😓")
 	}
 
-	err = keyring.Set(serviceName, id, profile.Password)
+	// Save password in the keyring
+	savePassword(id, profile.Password)
+
 	if err != nil {
 		exit(err, "Sorry, I can't save the password in the keyring 😓")
 	}
@@ -203,7 +405,8 @@ func RemoveProfile(id string) {
 		}
 	}
 	// Remove password from the keyring
-	err := keyring.Delete(serviceName, id)
+	err := deletePassword(id)
+
 	if err != nil {
 		exit(err, "Sorry, I can't remove the password from the keyring 😓")
 	}
