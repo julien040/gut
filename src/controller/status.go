@@ -3,7 +3,9 @@ package controller
 import (
 	"fmt"
 	"os"
+	"time"
 
+	"github.com/briandowns/spinner"
 	"github.com/julien040/gut/src/executor"
 
 	"github.com/fatih/color"
@@ -36,8 +38,12 @@ func Status(cmd *cobra.Command, args []string) {
 		fmt.Printf("On branch %s\n", color.HiGreenString(branch))
 	}
 
+	spinner := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
+	spinner.Prefix = "Getting status of files "
+	spinner.Start()
 	/* --------------------------- Get status of files -------------------------- */
 	status, err := executor.GetStatus(wd)
+	spinner.Stop()
 	if err != nil {
 		exitOnError("Sorry, I can't get the status of the repository 😢", err)
 	}
