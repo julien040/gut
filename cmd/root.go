@@ -32,11 +32,11 @@ import (
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "gut",
-	Short: "Show the status of your git repo",
+	Short: "Simplify your Git journey with Gut",
 	Long: `
-Gut is a simple git client.
-It allows you to manage your git repositories in a simple way.
-Our goal is not to replace git, but to make it easier to use for the most common tasks.`,
+	Gut is a powerful command-line interface (CLI) designed to make Git easier to use.
+	Effortlessly version control your projects with Gut.`,
+
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },

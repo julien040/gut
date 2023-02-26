@@ -32,7 +32,7 @@ var ignoreCmd = &cobra.Command{
 	Use:   "ignore",
 	Short: "Download a .gitignore template",
 	Long: `Download a .gitignore template from
-https://github.com/github/gitignore
+https://github.com/toptal/gitignore
 and add it to the current repository.
 If .gitignore already exists, it will be updated.
 `,

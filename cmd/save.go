@@ -30,7 +30,7 @@ import (
 // saveCmd represents the save command
 var saveCmd = &cobra.Command{
 	Use:     "save",
-	Short:   "Save your current work locally",
+	Short:   "Save (commit) your current work locally",
 	Aliases: []string{"s", "commit"},
 	Run:     controller.Save,
 }

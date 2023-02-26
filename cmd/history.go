@@ -29,7 +29,7 @@ import (
 // historyCmd represents the history command
 var historyCmd = &cobra.Command{
 	Use:     "history",
-	Short:   "Show history of commits",
+	Short:   "Search across your Git history",
 	Aliases: []string{"hist", "log", "logs"},
 	Run:     controller.History,
 }
