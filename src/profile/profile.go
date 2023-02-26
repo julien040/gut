@@ -203,7 +203,6 @@ func checkGUIOnLinux() bool {
 	// Go'll try to find the executable in the path to run it
 
 	_, err := exec.LookPath("Xorg")
-	fmt.Println(err)
 	return err == nil
 
 }
