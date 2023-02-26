@@ -29,7 +29,7 @@ import (
 // statusCmd represents the status command
 var statusCmd = &cobra.Command{
 	Use:   "status",
-	Short: "Show the status of the repository",
+	Short: "Show a list of modified files",
 	Run:   controller.Status,
 }
 

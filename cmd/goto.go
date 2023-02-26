@@ -29,7 +29,7 @@ import (
 // gotoCmd represents the goto command
 var gotoCmd = &cobra.Command{
 	Use:     "goto [full commit hash]",
-	Short:   "Switch temporarily your working to an old commit",
+	Short:   "Switch temporarily your working tree to an old commit",
 	Run:     controller.Goto,
 	Aliases: []string{"look", "lookout", "visualize"},
 }
