@@ -45,10 +45,16 @@ func exit(err error, message string) {
 
 const serviceName = "gut"
 
+var profileInitialized = false
+
 var ring keyringLinux.Keyring
 
 // Init a config file for the profiles and load it into the config package
-func init() {
+func loadProfileData() {
+	if profileInitialized {
+		return
+	}
+
 	// Get user home directory
 	home, err := os.UserHomeDir()
 	if err != nil {
@@ -149,6 +155,8 @@ func init() {
 		})
 	}
 
+	profileInitialized = true
+
 }
 
 // Save the config file
@@ -203,7 +211,6 @@ func checkGUIOnLinux() bool {
 	// Go'll try to find the executable in the path to run it
 
 	_, err := exec.LookPath("Xorg")
-	fmt.Println(err)
 	return err == nil
 
 }
@@ -255,7 +262,7 @@ func savePassword(id string, password string) {
 				dirPassFolder := path.Join(homeDir, ".password-store")
 				if !checkFolderExists(dirPassFolder) {
 					// We prompt the user to create the password store
-					print.Message("Please set up a password store with pass. To do so, follow this guide: https://gut-cli.dev/error/setup-pass-store", print.None)
+					print.Message(" To save your password, I need pass to be set up. To do so, follow this guide: https://gut-cli.dev/error/setup-pass-store", print.None)
 
 					os.Exit(1)
 				} else {
@@ -273,7 +280,7 @@ func savePassword(id string, password string) {
 
 				// If not, we explain to the user how to install it on his distro
 			} else {
-				exit(errors.New("pass not installed"), "Please install pass with your package manager (https://www.passwordstore.org/#download)")
+				exit(nil, "To save your password, I need pass to be installed. Please install it (https://www.passwordstore.org/#download)")
 			}
 		}
 
@@ -317,6 +324,7 @@ func retrievePassword(id string) (string, error) {
 						print.Message("You can do it with the following command:", print.Info)
 						print.Message("	pass show "+id, print.None)
 						print.Message("To learn more about this, follow this guide: https://gut-cli.dev/error/unlock-pass-store", print.None)
+						os.Exit(1)
 						return "", errors.New("unable to retrieve the password from the keyring")
 					}
 					return string(password.Data), nil
@@ -374,6 +382,9 @@ func deletePassword(id string) error {
 
 // Add a profile to the config file and return the id
 func AddProfile(profile Profile) string {
+	// Load profile data in global variable
+	loadProfileData()
+
 	id, err := nanoid.New()
 	if err != nil {
 		exit(err, "Sorry, I can't generate an id 😓")
@@ -397,10 +408,14 @@ func AddProfile(profile Profile) string {
 
 // Return the profiles array
 func GetProfiles() *[]Profile {
+	// Load profile data in global variable
+	loadProfileData()
 	return &profiles
 }
 
 func RemoveProfile(id string) {
+	// Load profile data in global variable
+	loadProfileData()
 	// Remove profile from the database
 	for i, profile := range profiles {
 		if profile.Id == id {
@@ -418,6 +433,9 @@ func RemoveProfile(id string) {
 }
 
 func CheckIfProfileExists(id string) bool {
+	// Load profile data in global variable
+	loadProfileData()
+
 	for _, profile := range profiles {
 		if profile.Id == id {
 			return true
@@ -456,6 +474,8 @@ func GetProfileIDFromPath(path string) string {
 }
 
 func GetProfileFromPath(path string) (Profile, error) {
+	// Load profile data in global variable
+	loadProfileData()
 	id := GetProfileIDFromPath(path)
 	if id == "" {
 		return Profile{}, errors.New("no profile found in this directory")
@@ -469,6 +489,9 @@ func GetProfileFromPath(path string) (Profile, error) {
 }
 
 func IsAliasAlreadyUsed(alias string) bool {
+	// Load profile data in global variable
+	loadProfileData()
+
 	for _, profile := range profiles {
 		if profile.Alias == alias {
 			return true
