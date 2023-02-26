@@ -21,8 +21,8 @@ builds:
     goos:
       - darwin
 
-    hooks:
-      post: ['doppler run --command="bash scripts/notarise.sh {{ .Path }}" ']
+    #hooks:
+    #  post: ['doppler run --command="bash scripts/notarise.sh {{ .Path }}" ']
 
 project_name: gut
 
