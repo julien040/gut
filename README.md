@@ -44,6 +44,24 @@ sudo yum update
 sudo yum install gut
 ```
 
+## Example
+
+```bash
+cd my-awesome-project
+
+# Init a new git repo
+gut init
+
+# Do some changes
+touch my-billion-dollar-idea.txt
+
+# Commit your new file
+gut save # Alias of gut commit
+
+# Sync your changes with the upstream
+gut sync
+```
+
 ## Features
 
 - Built-in credentials manager
@@ -107,7 +125,7 @@ That being said, I believe that **`gut`** is an excellent choice for simple task
 
 ## Documentation
 
-[Documentation](https://gut.cli/docs)
+[Documentation](https://gut-cli.dev/docs)
 
 ## FAQ
 
@@ -135,24 +153,6 @@ Of course, you can!
 - `gut commit sparsely` to create a commit with specified files rather than all files.
 - `gut time-machine` to go back in time (e.g. reverse a pull).
 - Open a new discussion if you want your feature to be added here!
-
-## Examples
-
-```bash
-cd my-awesome-project
-
-# Init a new git repo
-gut init
-
-# Do some changes
-touch my-billion-dollar-idea.txt
-
-# Commit your new file
-gut save # Alias of gut commit
-
-# Sync your changes with the upstream
-gut sync
-```
 
 ## License
 
