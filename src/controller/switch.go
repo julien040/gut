@@ -2,7 +2,9 @@ package controller
 
 import (
 	"os"
+	"time"
 
+	"github.com/briandowns/spinner"
 	"github.com/julien040/gut/src/executor"
 	"github.com/julien040/gut/src/print"
 	"github.com/julien040/gut/src/prompt"
@@ -30,6 +32,9 @@ func Switch(cmd *cobra.Command, args []string) {
 		branchName = args[0]
 	}
 
+	// Define a reusable spinner
+	s := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
+
 	// Check if the branch exists
 	exists, err := executor.CheckIfBranchExists(wd, branchName)
 	if err != nil {
@@ -53,8 +58,12 @@ func Switch(cmd *cobra.Command, args []string) {
 		}
 	} else { // If the branch exists, switch to it
 
+		s.Prefix = "Checking if the working tree is clean... "
+		s.Start()
+
 		// Check if the working tree is clean
 		clean, err := executor.IsWorkTreeClean(wd)
+		s.Stop()
 		if err != nil {
 			exitOnError("I can't check if there are uncommitted changes", err)
 		}
@@ -69,7 +78,10 @@ func Switch(cmd *cobra.Command, args []string) {
 				return
 			}
 		}
+		s.Prefix = "Switching to the branch " + branchName + " "
+		s.Start()
 		err = executor.CheckoutBranch(wd, branchName)
+		s.Stop()
 		if err != nil {
 			exitOnError("I can't switch to the branch "+branchName, err)
 		}
