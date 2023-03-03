@@ -3,10 +3,12 @@ package controller
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"os"
 
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/briandowns/spinner"
 	"github.com/julien040/gut/src/executor"
 	"github.com/julien040/gut/src/print"
 	"github.com/spf13/cobra"
@@ -112,8 +114,14 @@ func Save(cmd *cobra.Command, args []string) {
 
 	commitMessage := promptCommitMessage(title, message)
 
+	// Launch the spinner
+	sp := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
+	sp.Suffix = " I'm committing your changes..."
+	sp.Start()
+
 	// Commit the changes
 	Result, err := executor.Commit(wd, commitMessage)
+	sp.Stop()
 	if err != nil {
 		exitOnError("Error while committing", err)
 	}
