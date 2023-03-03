@@ -1,6 +1,9 @@
 package controller
 
 import (
+	"time"
+
+	"github.com/briandowns/spinner"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/spf13/cobra"
 
@@ -14,8 +17,14 @@ func Goto(cmd *cobra.Command, args []string) {
 
 	checkIfGitRepoInitialized(wd)
 
+	// Add a spinner
+	s := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
+
+	s.Prefix = "Checking if there is uncommitted changes "
+	s.Start()
 	// Check if there is uncommitted changes
 	clean, err := executor.IsWorkTreeClean(wd)
+	s.Stop()
 	if err != nil {
 		exitOnError("Sorry, I can't check if there is uncommitted changes", err)
 	}
@@ -76,8 +85,11 @@ func Goto(cmd *cobra.Command, args []string) {
 		return
 	}
 
+	s.Prefix = "Changing your working tree to the commit " + commit.Hash.String() + " "
+	s.Start()
 	// Checkout the commit
 	err = executor.CheckoutCommit(wd, commit.Hash.String())
+	s.Stop()
 	if err != nil {
 		exitOnError("Sorry, I can't checkout the commit", err)
 	}
