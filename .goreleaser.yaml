@@ -83,15 +83,15 @@ brews:
     dependencies:
       - git
 
-scoop:
-  bucket:
-    owner: julien040
-    name: gut-scoop
-  homepage: https://gut-cli.dev
-  description: Gut is an easy to use Git client for the command line.
-  license: MIT
-  depends:
-    - "git"
+#scoop:
+#  bucket:
+#    owner: julien040
+#    name: gut-scoop
+#  homepage: https://gut-cli.dev
+#  description: Gut is an easy to use Git client for the command line.
+#  license: MIT
+#  depends:
+#    - "git"
 
 release:
   github:
