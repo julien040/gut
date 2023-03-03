@@ -13,6 +13,9 @@ builds:
     goos:
       - linux
       - windows
+    
+    ldflags:
+      - -X github.com/julien040/gut/src/telemetry.gutVersion={{.Version}}
 
   - binary: gut
     id: gut-darwin
@@ -20,6 +23,9 @@ builds:
       - CGO_ENABLED=0
     goos:
       - darwin
+
+    ldflags:
+      - -X github.com/julien040/gut/src/telemetry.gutVersion={{.Tag}}
 
     #hooks:
     #  post: ['doppler run --command="bash scripts/notarise.sh {{ .Path }}" ']

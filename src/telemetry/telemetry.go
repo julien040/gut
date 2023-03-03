@@ -22,7 +22,7 @@ var consentStateKnown = false
 
 const eventServerURL = "https://api-events.gut-cli.dev/v1"
 
-const gutVersion = "0.1.0"
+var gutVersion = "dev"
 
 var wg sync.WaitGroup
 
