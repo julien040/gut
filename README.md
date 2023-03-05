@@ -10,8 +10,9 @@ If you have years of muscle memory, gut isn’t probably for you.
 
 To install gut on Windows, run
 
-```bash
-choco install gut
+```powershell
+scoop bucket add gut https://github.com/julien040/gut-scoop
+scoop install gut/gut
 ```
 
 ### MacOS
@@ -19,7 +20,7 @@ choco install gut
 To install gut on macOS, open the Terminal and run
 
 ```bash
-brew install julien040/gut-tap
+Brew tap julien040/gut && brew install gut
 ```
 
 ### Apt-get
@@ -42,6 +43,14 @@ gpgcheck=0
 EOF
 sudo yum update
 sudo yum install gut
+```
+
+### Build from source
+
+You need to have go installed on your machine
+
+```bash
+go install github.com/julien040/gut@latest
 ```
 
 ## Example
