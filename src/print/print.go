@@ -1,6 +1,7 @@
 package print
 
 import (
+	"github.com/charmbracelet/lipgloss"
 	printColor "github.com/fatih/color"
 )
 
@@ -14,6 +15,10 @@ const (
 	Optional Color = "optional"
 	None     Color = "none"
 )
+
+var optionalStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("248"))
+
+var infoStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("39"))
 
 // # Message prints a message with a color
 //
@@ -33,11 +38,11 @@ func Message(message string, color Color, a ...interface{}) {
 	case Warning:
 		printColor.Yellow(message, a...)
 	case Info:
-		printColor.Blue(message, a...)
+		printColor.Blue(infoStyle.Render(message), a...)
 	case Success:
 		printColor.Green(message, a...)
 	case Optional:
-		printColor.Black(message, a...)
+		printColor.White(optionalStyle.Render(message), a...)
 	case None:
 		printColor.White(message, a...)
 	default:
