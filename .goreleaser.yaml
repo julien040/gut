@@ -96,7 +96,7 @@ release:
   github:
     owner: julien040
     name: gut
-  draft: true
+  draft: false
   prerelease: auto
 
 archives:
