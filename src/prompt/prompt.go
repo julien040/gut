@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"runtime"
 	"strings"
 
 	"github.com/julien040/gut/src/print"
@@ -18,7 +19,15 @@ func InputLine(message string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	// Remove the delimiter
+	// Remove the delimiter added when submitting with enter
+	// https://github.com/julien040/gut/issues/28
+
+	// Windows ends line with \r\n
+	if runtime.GOOS == "windows" {
+		return strings.TrimSuffix(input, "\r\n"), nil
+	}
+
+	// Other OS end line with \n
 	return strings.TrimSuffix(input, "\n"), nil
 }
 
