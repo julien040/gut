@@ -1,5 +1,7 @@
 # Gut
 
+> ⚠️ Gut is still in alpha which means that there may be some features that are missing
+
 Gut is a CLI designed to make Git easier to use.
 
 If you have years of muscle memory, gut isn’t probably for you.
@@ -11,7 +13,7 @@ If you have years of muscle memory, gut isn’t probably for you.
 
 To install gut on Windows, run
 
-```powershell
+```bash
 scoop bucket add gut https://github.com/julien040/gut-scoop
 scoop install gut/gut
 ```
