@@ -4,6 +4,7 @@ Gut is a CLI designed to make Git easier to use.
 
 If you have years of muscle memory, gut isn’t probably for you.
 
+
 ## Installation
 
 ### Windows
@@ -20,7 +21,7 @@ scoop install gut/gut
 To install gut on macOS, open the Terminal and run
 
 ```bash
-Brew tap julien040/gut && brew install gut
+brew tap julien040/gut && brew install gut
 ```
 
 ### Apt-get
