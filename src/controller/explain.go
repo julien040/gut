@@ -78,6 +78,11 @@ var explainMessage = map[string]string{
 	"save": `To run this command with git, you would do:
 	$ git commit -m "<message>"`,
 
+	"squash": `To run this command with git, you would do:
+	$ git reset --soft <commit>
+	$ git commit --amend -m <message
+	`,
+
 	"status": `To run this command with git, you would do:
 	$ git status`,
 	"switch": `To run this command with git, you would do:
