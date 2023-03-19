@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"os"
 	"time"
 
@@ -11,6 +10,7 @@ import (
 
 	"github.com/julien040/gut/src/executor"
 	"github.com/julien040/gut/src/print"
+	"github.com/julien040/gut/src/prompt"
 )
 
 // Returns the index of the latest commit that has been pushed
@@ -27,7 +27,6 @@ import (
 func getIndexLatestCommitPushed(commits []object.Commit) int {
 	for i, commit := range commits {
 		if executor.GitRemoteContainsHash(commit.Hash.String()) {
-			fmt.Println(i)
 			return i
 		}
 	}
@@ -124,6 +123,14 @@ func Squash(cmd *cobra.Command, args []string) {
 	print.Message("Choose a new message for the commit", print.Info)
 	// Choose a new message for the commit
 	newMessage := promptCommitMessage("", "")
+
+	res, err := prompt.InputBool("Are you sure you want to squash all commits to "+commitToSquash.Hash.String()+"?", false)
+	if err != nil {
+		exitOnError("Sorry, I can't prompt the user", err)
+	}
+	if !res {
+		os.Exit(0)
+	}
 
 	// Soft reset to the commit to squash
 	s.Prefix = "Soft resetting to the commit to squash... "
