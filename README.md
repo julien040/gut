@@ -6,6 +6,72 @@ Gut is a CLI designed to make Git easier to use.
 
 If you have years of muscle memory, gut isn’t probably for you.
 
+## Table of contents
+
+- [Example](#example)
+- [Features](#features)
+- [Main Useful Commands](#main-useful-commands)
+- [Installation](#installation)
+  - [Windows](#windows)
+  - [MacOS](#macos)
+  - [Apt-get](#apt-get)
+  - [Yum](#yum)
+  - [Build from source](#build-from-source)
+- [Principles](#principles)
+    - [Integration with cloud](#integration-with-cloud)
+    - [No rewriting of history](#no-rewriting-of-history)
+    - [Staging area isn’t a thing](#staging-area-isnt-a-thing)
+    - [Detached HEAD isn’t scary](#detached-head-isnt-scary)
+    - [Great user experience](#great-user-experience)
+    - [Coexist with Git](#coexist-with-git)
+- [Documentation](#documentation)
+- [FAQ](#faq)
+    - [Why was this project built?](#why-was-this-project-built)
+    - [How can I contact the developer?](#how-can-i-contact-the-developer)
+    - [Can I contribute](#can-i-contribute)
+- [License](#license)
+- [Authors](#authors)
+- [Contributing](#contributing)
+
+
+## Example
+
+```bash
+cd my-awesome-project
+
+# Init a new git repo
+gut init
+
+# Do some changes
+touch my-billion-dollar-idea.txt
+
+# Commit your new file
+gut save # Alias of gut commit
+
+# Sync your changes with the upstream
+gut sync
+```
+
+## Features
+
+- Built-in credentials manager
+- Consistent naming of commands
+- Integration with cloud platforms (merge and diff opens in the web UI)
+- `gut fix` command helps you fix your mistakes with git
+- `.gitignore` template downloader
+- Simplified authentication with GitHub
+
+## Main Useful Commands
+
+- `gut save` - Commits changes using gitmoji
+- `gut sync` - Syncs changes with your remote repository
+- `gut goto` - Lets you rewind the state of your project to a particular commit by temporarily modifying the working tree
+- `gut fix` - Helps you fix your mistakes with git
+- `gut revert` - Reverts your project to a previous state to fix a bug introduced n commits ago
+- `gut undo` - Discards changes made since the last commit
+- `gut ignore` - Downloads templates of `.gitignore`
+- `gut whereami` - Shows where your HEAD points to (no more `rev-parse`)
+- `gut switch` - Creates a new branch or switches to an existing one
 
 ## Installation
 
@@ -55,44 +121,6 @@ You need to have go installed on your machine
 ```bash
 go install github.com/julien040/gut@latest
 ```
-
-## Example
-
-```bash
-cd my-awesome-project
-
-# Init a new git repo
-gut init
-
-# Do some changes
-touch my-billion-dollar-idea.txt
-
-# Commit your new file
-gut save # Alias of gut commit
-
-# Sync your changes with the upstream
-gut sync
-```
-
-## Features
-
-- Built-in credentials manager
-- Consistent naming of commands
-- Integration with cloud platforms (merge and diff opens in the web UI)
-- `gut fix` command helps you fix your mistakes with git
-- `.gitignore` template downloader
-- Simplified authentication with GitHub
-
-## Main Useful Commands
-
-- `gut save` - Commits changes using gitmoji
-- `gut sync` - Syncs changes with your remote repository
-- `gut goto` - Lets you rewind the state of your project to a particular commit by temporarily modifying the working tree
-- `gut revert` - Reverts your project to a previous state to fix a bug introduced n commits ago
-- `gut undo` - Discards changes made since the last commit
-- `gut ignore` - Downloads templates of `.gitignore`
-- `gut whereami` - Shows where your HEAD points to (no more `rev-parse`)
-- `gut switch` - Creates a new branch or switches to an existing one
 
 ## Principles
 
