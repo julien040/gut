@@ -4,7 +4,7 @@
 
 Gut is a CLI designed to make Git easier to use.
 
-If you have years of muscle memory, gut isn’t probably for you.
+If you have years of muscle memory, gut is probably not for you.
 
 ## Table of contents
 
