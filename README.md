@@ -2,7 +2,7 @@
 
 > ⚠️ Gut is still in alpha which means that there may be some features that are missing
 
-> **To read about the [future of Gut](/futures_of_gut.md), check [this blog post](/futures_of_gut.md)**
+> **To read about the [future of Gut](/future_of_gut.md), check [this blog post](/future_of_gut.md)**
 
 Gut is an alternative CLI for Git. It provides a consistent naming of commands and a useful set of features.
 
