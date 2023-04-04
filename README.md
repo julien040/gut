@@ -2,7 +2,9 @@
 
 > ⚠️ Gut is still in alpha which means that there may be some features that are missing
 
-Gut is a CLI designed to make Git easier to use.
+> **To read about the [future of Gut](/futures_of_gut.md), check [this blog post](/futures_of_gut.md)**
+
+Gut is an alternative CLI for Git. It provides a consistent naming of commands and a useful set of features.
 
 If you have years of muscle memory, gut is probably not for you.
 
