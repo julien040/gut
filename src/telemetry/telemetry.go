@@ -32,6 +32,10 @@ func exit(err error, message string) {
 	os.Exit(1)
 }
 
+func GetBuildInfo() string {
+	return gutVersion
+}
+
 func getConsentStateFromFile() {
 	// Get user home directory
 	home, err := os.UserHomeDir()
