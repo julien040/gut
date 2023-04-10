@@ -7,7 +7,6 @@ package controller
 import (
 	"fmt"
 	"net/mail"
-	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -35,7 +34,7 @@ func checkURL(str string) bool {
 
 // Return the name of the repo from the URL
 func getRepoNameFromURL(str string) string {
-	parsed, err := url.Parse(str)
+	parsed, err := giturls.Parse(str)
 	if err != nil {
 		return ""
 	} else {
@@ -63,7 +62,7 @@ func makeValidPath(originalPath string, repoName string) string {
 }
 
 func getHost(str string) string {
-	parsed, err := url.Parse(str)
+	parsed, err := giturls.Parse(str)
 	if err != nil {
 		return ""
 	} else {

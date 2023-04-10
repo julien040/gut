@@ -115,6 +115,20 @@ func Test_getRepoNameFromURL(t *testing.T) {
 			},
 			want: "",
 		},
+		{
+			name: "Valid URL with ssh",
+			args: args{
+				str: "git@github.com:julien040/gut.git",
+			},
+			want: "gut",
+		},
+		{
+			name: "Valid URL with ssh without .git",
+			args: args{
+				str: "git@github.com:julien040/gut",
+			},
+			want: "gut",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -155,7 +169,29 @@ func Test_getHost(t *testing.T) {
 			},
 			want: "gitlab.com:8080",
 		},
+		{
+			name: "Valid URL with ssh",
+			args: args{
+				str: "git@github.com:julien040/gut",
+			},
+			want: "github.com",
+		},
+		{
+			name: "Invalid URL",
+			args: args{
+				str: "",
+			},
+			want: "",
+		},
+		{
+			name: "Valid URL with ssh without path",
+			args: args{
+				str: "git@github.com:julien040",
+			},
+			want: "github.com",
+		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := getHost(tt.args.str); got != tt.want {
