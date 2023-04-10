@@ -38,6 +38,42 @@ func Test_checkURL(t *testing.T) {
 			},
 			want: false,
 		},
+		{
+			name: "Valid URL with ssh",
+			args: args{
+				str: "git@github.com:julien040/gut.git",
+			},
+			want: true,
+		},
+		{
+			name: "Valid URL with ssh without .git",
+			args: args{
+				str: "git@github.com:julien040/gut",
+			},
+			want: true,
+		},
+		{
+			name: "Valid URL with ssh without host",
+			args: args{
+				str: "git@julien040/gut.git",
+			},
+			want: false,
+		},
+		{
+			name: "Valid URL with ssh without scheme",
+			args: args{
+				str: "julien040@git/github.com/julien040/gut.git",
+			},
+			want: false,
+		},
+		{
+			name: "Valid Gitlab URL with ssh",
+			args: args{
+				str: "git@gitlab.com:gitlab-org/gitlab.git",
+			},
+			want: true,
+		},
+
 		// Check URL doesn't support ssh yet
 	}
 	for _, tt := range tests {
