@@ -38,6 +38,42 @@ func Test_checkURL(t *testing.T) {
 			},
 			want: false,
 		},
+		{
+			name: "Valid URL with ssh",
+			args: args{
+				str: "git@github.com:julien040/gut.git",
+			},
+			want: true,
+		},
+		{
+			name: "Valid URL with ssh without .git",
+			args: args{
+				str: "git@github.com:julien040/gut",
+			},
+			want: true,
+		},
+		{
+			name: "Valid URL with ssh without host",
+			args: args{
+				str: "git@julien040/gut.git",
+			},
+			want: false,
+		},
+		{
+			name: "Valid URL with ssh without scheme",
+			args: args{
+				str: "julien040@git/github.com/julien040/gut.git",
+			},
+			want: false,
+		},
+		{
+			name: "Valid Gitlab URL with ssh",
+			args: args{
+				str: "git@gitlab.com:gitlab-org/gitlab.git",
+			},
+			want: true,
+		},
+
 		// Check URL doesn't support ssh yet
 	}
 	for _, tt := range tests {
@@ -79,6 +115,20 @@ func Test_getRepoNameFromURL(t *testing.T) {
 			},
 			want: "",
 		},
+		{
+			name: "Valid URL with ssh",
+			args: args{
+				str: "git@github.com:julien040/gut.git",
+			},
+			want: "gut",
+		},
+		{
+			name: "Valid URL with ssh without .git",
+			args: args{
+				str: "git@github.com:julien040/gut",
+			},
+			want: "gut",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -119,7 +169,29 @@ func Test_getHost(t *testing.T) {
 			},
 			want: "gitlab.com:8080",
 		},
+		{
+			name: "Valid URL with ssh",
+			args: args{
+				str: "git@github.com:julien040/gut",
+			},
+			want: "github.com",
+		},
+		{
+			name: "Invalid URL",
+			args: args{
+				str: "",
+			},
+			want: "",
+		},
+		{
+			name: "Valid URL with ssh without path",
+			args: args{
+				str: "git@github.com:julien040",
+			},
+			want: "github.com",
+		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := getHost(tt.args.str); got != tt.want {

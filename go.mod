@@ -13,6 +13,7 @@ require (
 	github.com/go-git/go-git/v5 v5.5.1
 	github.com/matoous/go-nanoid/v2 v2.0.0
 	github.com/spf13/cobra v1.6.1
+	github.com/whilp/git-urls v1.0.0
 	github.com/zalando/go-keyring v0.2.2
 )
 

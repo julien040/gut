@@ -7,7 +7,6 @@ package controller
 import (
 	"fmt"
 	"net/mail"
-	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -16,6 +15,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	giturls "github.com/whilp/git-urls"
 
 	"github.com/julien040/gut/src/executor"
 	"github.com/julien040/gut/src/print"
@@ -24,18 +24,17 @@ import (
 
 // Return true if the string is a valid URL for git
 func checkURL(str string) bool {
-	parsed, err := url.Parse(str)
+	url, err := giturls.Parse(str)
 	if err != nil {
 		return false
 	} else {
-		// Check if the URL has a scheme and a host
-		return parsed.Scheme != "" && parsed.Host != ""
+		return url.Host != "" && url.Scheme != ""
 	}
 }
 
 // Return the name of the repo from the URL
 func getRepoNameFromURL(str string) string {
-	parsed, err := url.Parse(str)
+	parsed, err := giturls.Parse(str)
 	if err != nil {
 		return ""
 	} else {
@@ -63,7 +62,7 @@ func makeValidPath(originalPath string, repoName string) string {
 }
 
 func getHost(str string) string {
-	parsed, err := url.Parse(str)
+	parsed, err := giturls.Parse(str)
 	if err != nil {
 		return ""
 	} else {
