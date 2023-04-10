@@ -24,22 +24,19 @@ package cmd
 import (
 	"os"
 
+	"github.com/julien040/gut/src/controller"
 	"github.com/julien040/gut/src/prompt"
 	"github.com/julien040/gut/src/telemetry"
 	"github.com/spf13/cobra"
 )
 
-// rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "gut",
 	Short: "Simplify your Git journey with Gut",
 	Long: `
 	Gut is a powerful command-line interface (CLI) designed to make Git easier to use.
 	Effortlessly version control your projects with Gut.`,
-
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	Run: controller.Root,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -79,5 +76,6 @@ func promptForTelemetry() {
 }
 
 func init() {
+	rootCmd.Flags().BoolP("version", "v", false, "Print the version of Gut and the release date")
 
 }
