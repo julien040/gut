@@ -242,3 +242,13 @@ func GitDiffRef(ref1 string, ref2 string) (bool, error) {
 func GitDeleteRemoteBranch(remote string, branch string) error {
 	return runCommand("git", "push", remote, "--delete", branch)
 }
+
+// Stash the changes
+func GitStash() error {
+	return runCommand("git", "stash")
+}
+
+// Pop the changes from the stash
+func GitStashPop() error {
+	return runCommand("git", "stash", "pop")
+}

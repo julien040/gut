@@ -61,6 +61,10 @@ func Switch(cmd *cobra.Command, args []string) {
 		s.Prefix = "Checking if the working tree is clean... "
 		s.Start()
 
+		// Set to true when a stash is created
+		// We need to pop the stash at the end of the function
+		mustStashPop := false
+
 		// Check if the working tree is clean
 		clean, err := executor.IsWorkTreeClean(wd)
 		s.Stop()
@@ -69,18 +73,32 @@ func Switch(cmd *cobra.Command, args []string) {
 		}
 		// If not clean, ask the user if he wants to continue because the changes might be lost
 		if !clean {
-			res, err := prompt.InputBool("Uh oh, there are uncommitted changes. They might be lost if you switch branches. Do you want to continue?", false)
+			/*
+				Because the working tree is not clean, we have two options:
+					- stash the changes
+					- discard the changes
+
+				We will ask the user which option he wants to use
+			*/
+			print.Message("Uh oh, there are uncommitted changes", print.Warning)
+
+			res, err := prompt.InputSelect("What do you want to do?", []string{"Keep the changes", "Discard the changes"})
 			if err != nil {
 				exitOnKnownError(errorReadInput, err)
 			}
-			if !res {
-				print.Message("Okay, I won't switch branches", print.Info)
-				return
+
+			if res == "Keep the changes" {
+				executor.GitStash()
+				mustStashPop = true
 			}
 		}
 		s.Prefix = "Switching to the branch " + branchName + " "
 		s.Start()
 		err = executor.CheckoutBranch(wd, branchName)
+		// If we stashed the changes, we need to pop the stash
+		if mustStashPop {
+			executor.GitStashPop()
+		}
 		s.Stop()
 		if err != nil {
 			exitOnError("I can't switch to the branch "+branchName, err)
