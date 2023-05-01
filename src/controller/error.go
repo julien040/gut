@@ -6,7 +6,7 @@ import (
 
 	"errors"
 
-	"github.com/julien040/gut/src/print"
+	"github.com/fatih/color"
 )
 
 var (
@@ -30,13 +30,17 @@ type GutError struct {
 
 // An helper function to exit the program if an error occurs
 func exitOnError(str string, err error) {
-	fmt.Println("")
+	// Print the error message to stderr
+
+	// Print a new line
+	fmt.Fprintln(os.Stderr, "")
 	if str != "" {
-		print.Message(str, print.Error)
+		// Print the error message in red
+		fmt.Fprintf(os.Stderr, "%s \n", color.RedString(str))
 	}
 	if err != nil {
-		fmt.Printf("Error message: %s\n", err)
-		print.Message("If this error persists, please open an issue on GitHub: https://github.com/julien040/gut/issues/new", print.None)
+		fmt.Fprintf(os.Stderr, "%s \n", err.Error())
+		fmt.Fprintf(os.Stderr, "%s\n", "If this error persists, please open an issue on GitHub: https://github.com/julien040/gut/issues/new")
 	}
 
 	os.Exit(1)
@@ -52,13 +56,17 @@ func getLinkForError(GutError GutError) string {
 //
 // This should be used when the error is known and can be resolved by the user
 func exitOnKnownError(typeOfError GutError, err error) {
-	fmt.Println("")
+	// Print the error message to stderr
+	fmt.Fprintln(os.Stderr, "")
 	if err != nil {
-		print.Message("%s (error: %s)", print.Error, typeOfError.Message, err.Error())
+		fmt.Fprintf(os.Stderr, color.RedString("%s (error: %s)\n"), color.RedString(typeOfError.Message), color.RedString(err.Error()))
+		/* print.Message("%s (error: %s)", print.Error, typeOfError.Message, err.Error()) */
 	} else {
-		print.Message("%s", print.Error, typeOfError.Message)
+		fmt.Fprintf(os.Stderr, "%s\n", color.RedString(typeOfError.Message))
+		/* print.Message("%s", print.Error, typeOfError.Message) */
 	}
-	print.Message("To resolve this issue, please follow the instructions on this page: %s", print.Optional, getLinkForError(typeOfError))
+	fmt.Fprintf(os.Stderr, "To resolve this issue, please follow the instructions on this page: %s\n", getLinkForError(typeOfError))
+	/* print.Message("To resolve this issue, please follow the instructions on this page: %s", print.Optional, getLinkForError(typeOfError)) */
 
 	os.Exit(1)
 }
