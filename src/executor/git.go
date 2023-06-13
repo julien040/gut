@@ -12,6 +12,8 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"strconv"
+	"strings"
 )
 
 // Execute a command using the exec package and return the error if any
@@ -251,4 +253,38 @@ func GitStash() error {
 // Pop the changes from the stash
 func GitStashPop() error {
 	return runCommand("git", "stash", "pop")
+}
+
+// Get how many commits the current branch is behind
+func GitBehindCommitsCount() (int, error) {
+	// Using git's rev-list command, get how much local is behind origin
+	output, err := runCommandWithOutput("git", "rev-list", "--count", "HEAD..@{u}")
+	if err != nil {
+		return 0, err
+	}
+
+	// Because the output is a string, we try to parse it as a int
+	// The output ends with a \n, so we need to remove it
+	output = strings.TrimSuffix(output, "\n")
+	number, err := strconv.Atoi(output)
+
+	return number, err
+
+}
+
+// Get how many commits the current branch is behind
+func GitAheadCommitsCount() (int, error) {
+	// Using git's rev-list command, get how much local is behind origin
+	output, err := runCommandWithOutput("git", "rev-list", "--count", "@{u}..HEAD")
+	if err != nil {
+		return 0, err
+	}
+
+	// Because the output is a string, we try to parse it as a int
+	// The output ends with a \n, so we need to remove it
+	output = strings.TrimSuffix(output, "\n")
+	number, err := strconv.Atoi(output)
+
+	return number, err
+
 }

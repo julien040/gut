@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/julien040/gut/src/executor"
@@ -29,13 +30,13 @@ func Sync(cmd *cobra.Command, args []string) {
 	// If there is, we ask the user to commit them
 	// If there is not, we exit
 
-	clean, err := executor.IsWorkTreeClean(wd)
+	/* clean, err := executor.IsWorkTreeClean(wd)
 	if err != nil {
 		exitOnError("Sorry, I can't check if there are uncommited changes 😢", err)
 	}
 	if !clean {
 		exitOnError("Uh oh, there are uncommited changes. Please commit them before syncing with `gut save`", nil)
-	}
+	} */
 
 	// Get the remote
 	// If there is no remote, we ask the user to add one
@@ -46,8 +47,22 @@ func Sync(cmd *cobra.Command, args []string) {
 		exitOnError("Sorry, I can't get the remote 😢", err)
 	}
 
+	fmt.Println(remote)
+
+	behind, err := executor.GitBehindCommitsCount()
+	if err != nil {
+		exitOnError("I can't get the number of commit behind", err)
+	}
+
+	ahead, err := executor.GitAheadCommitsCount()
+	if err != nil {
+		exitOnError("I can't get the number of commit ahead", err)
+	}
+
+	print.Message("Ahead %d | Behind %d", print.Info, ahead, behind)
+
 	// We extract the code to use it recursively in case of error
-	syncRepo(wd, remote, false)
+	/* syncRepo(wd, remote, false) */
 }
 
 func syncRepo(path string, remote executor.Remote, requestProfile bool) error {
