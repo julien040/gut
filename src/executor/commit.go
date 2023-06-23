@@ -32,31 +32,25 @@ func AddAll(path string) error {
 		// This is a workaround for the fact that go-git does not support .gitignore
 		err := GitAddAll()
 
-		// If git add . is successful, return
-		// Otherwise, use go-git to add all files
-		if err == nil {
-			return nil
+		return err
+	} else {
+		repo, err := OpenRepo(path)
+		if err != nil {
+			return err
 		}
-	}
-	repo, err := OpenRepo(path)
-	if err != nil {
-		return err
-	}
-	w, err := repo.Worktree()
-	if err != nil {
-		return err
-	}
-	// Replace the .gitignore file with the one in the repo
-	replaceGitIgnore(w, filepath.Join(path, ".gitignore"))
+		w, err := repo.Worktree()
+		if err != nil {
+			return err
+		}
+		// Replace the .gitignore file with the one in the repo
+		replaceGitIgnore(w, filepath.Join(path, ".gitignore"))
 
-	// Add all files
-	err = w.AddWithOptions(&git.AddOptions{
-		All: true,
-	})
-	if err != nil {
+		// Add all files
+		err = w.AddWithOptions(&git.AddOptions{
+			All: true,
+		})
 		return err
 	}
-	return nil
 }
 
 func Commit(path string, message string) (CommitResult, error) {

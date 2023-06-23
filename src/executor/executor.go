@@ -1,8 +1,6 @@
 package executor
 
 import (
-	"path/filepath"
-
 	"github.com/go-git/go-git/v5"
 )
 
@@ -64,13 +62,19 @@ func IsWorkTreeClean(path string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	// To not track files listed in the .gitignore
-	replaceGitIgnore(worktree, filepath.Join(path, ".gitignore"))
+	AddAll(path)
 	status, err := worktree.Status()
 	if err != nil {
 		return false, err
 	}
-	return status.IsClean(), nil
+
+	// See /src/executor/status.go:29
+	for _, statusFile := range status {
+		if statusFile.Staging != git.Untracked {
+			return false, nil
+		}
+	}
+	return true, nil
 }
 
 func IsDetachedHead(path string) (bool, error) {
