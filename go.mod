@@ -29,7 +29,6 @@ require (
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
-	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mtibben/percent v0.2.1 // indirect
 	github.com/muesli/reflow v0.2.1-0.20210115123740-9e1d0d53df68 // indirect
 	github.com/muesli/termenv v0.11.1-0.20220204035834-5ac8409525e0 // indirect
@@ -37,7 +36,6 @@ require (
 	github.com/stretchr/testify v1.8.0 // indirect
 	golang.org/x/mod v0.11.0 // indirect
 	golang.org/x/tools v0.10.0 // indirect
-	gopkg.in/src-d/go-billy.v4 v4.3.2 // indirect
 )
 
 require (
