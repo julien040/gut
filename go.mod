@@ -10,7 +10,7 @@ require (
 	github.com/charmbracelet/lipgloss v0.6.0
 	github.com/fatih/color v1.13.0
 	github.com/go-git/go-git v4.7.0+incompatible
-	github.com/go-git/go-git/v5 v5.7.0
+	github.com/go-git/go-git/v5 v5.5.1
 	github.com/matoous/go-nanoid/v2 v2.0.0
 	github.com/spf13/cobra v1.6.1
 	github.com/whilp/git-urls v1.0.0
@@ -23,7 +23,6 @@ require (
 	github.com/dvsekhvalnov/jose2go v1.5.0 // indirect
 	github.com/godbus/dbus v0.0.0-20190726142602-4481cbc300e2 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
-	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/gsterjov/go-libsecret v0.0.0-20161001094733-a6f4afe4910c // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
