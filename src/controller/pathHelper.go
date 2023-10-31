@@ -87,3 +87,27 @@ func isDirectoryEmpty(path string) (bool, error) {
 	}
 	return false, err
 }
+
+// Merge the path with the current directory if the path is relative
+// and return the absolute path
+// If the path is absolute, return the path
+func mergeLocalPathWithCurrDir(path string) string {
+	wd, err := os.Getwd()
+	if err != nil {
+		exitOnError("Sorry, I can't get the current directory 😓", err)
+	}
+	if filepath.IsAbs(path) {
+		return path
+	}
+	return filepath.Join(wd, path)
+}
+
+// Predicate function to check if the paths exist
+func validatePaths(paths []string) error {
+	for _, path := range paths {
+		if !checkIfPathExist(mergeLocalPathWithCurrDir(path)) {
+			return errors.New("the path " + path + " doesn't exist")
+		}
+	}
+	return nil
+}

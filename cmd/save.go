@@ -29,8 +29,11 @@ import (
 
 // saveCmd represents the save command
 var saveCmd = &cobra.Command{
-	Use:     "save",
-	Short:   "Save (commit) your current work locally",
+	Use:   "save [files...]",
+	Short: "Save (commit) your current work locally",
+	Long: `Save (commit) your current work locally
+To commit only some files, pass them as arguments to the command.
+In case no files are passed as arguments, all files will be committed.`,
 	Aliases: []string{"s", "commit"},
 	Run:     controller.Save,
 }

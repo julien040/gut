@@ -205,6 +205,11 @@ func GitAddAll() error {
 	return runCommand("git", "add", ".")
 }
 
+// Remove all the files from the index
+func GitRemoveAll() error {
+	return runCommand("git", "reset", "HEAD", "--", ".")
+}
+
 // Diff the index with the HEAD and return true if there is no diff
 func GitDiffIndexHead() (bool, error) {
 	// If there is no diff, output will be empty

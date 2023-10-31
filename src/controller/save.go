@@ -11,6 +11,7 @@ import (
 	"github.com/briandowns/spinner"
 	"github.com/julien040/gut/src/executor"
 	"github.com/julien040/gut/src/print"
+	"github.com/julien040/gut/src/prompt"
 	"github.com/spf13/cobra"
 )
 
@@ -108,6 +109,29 @@ func Save(cmd *cobra.Command, args []string) {
 	// Check if the user config is set
 	verifUserConfig(wd)
 
+	// Check if files have been passed as arguments
+	if len(args) > 0 {
+		err = validatePaths(args)
+		if err != nil {
+			exitOnError("I failed to validate the paths you entered", err)
+		}
+
+		message := "The following files will be saved:\n"
+		for _, arg := range args {
+			message += "\t- " + arg + "\n"
+		}
+		message += "Do you want to continue?"
+
+		res, err := prompt.InputBool(message, true)
+		if err != nil {
+			exitOnKnownError(errorReadInput, err)
+		}
+		if !res {
+			return
+		}
+
+	}
+
 	// Get the flag from the cmd
 	title := cmd.Flag("title").Value.String()
 	message := cmd.Flag("message").Value.String()
@@ -120,7 +144,7 @@ func Save(cmd *cobra.Command, args []string) {
 	sp.Start()
 
 	// Commit the changes
-	Result, err := executor.Commit(wd, commitMessage)
+	Result, err := executor.Commit(wd, commitMessage, args)
 	sp.Stop()
 	if err != nil {
 		exitOnError("Error while committing", err)
