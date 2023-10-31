@@ -53,7 +53,49 @@ func AddAll(path string) error {
 	}
 }
 
-func Commit(path string, message string) (CommitResult, error) {
+// Remove all files from the staging area
+func RemoveAll(path string) error {
+	// Check if git is installed
+	isGitInstalled := IsGitInstalled()
+	if isGitInstalled {
+		// Run git add . to add all files using git
+		// This is a workaround for the fact that go-git does not support .gitignore
+		err := GitRemoveAll()
+
+		return err
+	} else {
+		repo, err := OpenRepo(path)
+		if err != nil {
+			return err
+		}
+		w, err := repo.Worktree()
+		if err != nil {
+			return err
+		}
+		// Replace the .gitignore file with the one in the repo
+		replaceGitIgnore(w, filepath.Join(path, ".gitignore"))
+
+		// Remove all files
+		err = w.Reset(&git.ResetOptions{
+			Mode: git.MixedReset,
+		})
+
+		return err
+	}
+}
+
+// Add a file to the staging area
+func AddIndexPath(w git.Worktree, path string) error {
+	// Add the file
+	_, err := w.Add(path)
+
+	return err
+}
+
+// Commit the changes
+// If no files are passed as arguments, all files will be committed
+// Otherwise, only the files passed as arguments will be committed
+func Commit(path string, message string, file []string) (CommitResult, error) {
 	repo, err := OpenRepo(path)
 	if err != nil {
 		return CommitResult{}, err
@@ -62,10 +104,26 @@ func Commit(path string, message string) (CommitResult, error) {
 	if err != nil {
 		return CommitResult{}, err
 	}
-	// Add all files
-	err = AddAll(path)
-	if err != nil {
-		return CommitResult{}, err
+
+	// If no files are passed as arguments, add all files
+	if len(file) == 0 {
+		// Add all files
+		err = AddAll(path)
+		if err != nil {
+			return CommitResult{}, err
+		}
+	} else {
+		// Add only the files passed as arguments
+		RemoveAll(path)
+		replaceGitIgnore(w, filepath.Join(path, ".gitignore"))
+
+		for _, v := range file {
+			// Add the file
+			err = AddIndexPath(*w, v)
+			if err != nil {
+				return CommitResult{}, err
+			}
+		}
 	}
 
 	status, err := w.Status()
@@ -87,7 +145,7 @@ func Commit(path string, message string) (CommitResult, error) {
 		}
 	}
 	hash, err := w.Commit(message, &git.CommitOptions{
-		All: true,
+		// All: true,
 	})
 	if err != nil {
 		return CommitResult{}, err

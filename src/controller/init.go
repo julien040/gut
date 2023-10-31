@@ -26,7 +26,7 @@ func Init(cmd *cobra.Command, args []string) {
 	}
 
 	associateProfileToPath(profile, wd)
-	_, err = executor.Commit(wd, "🎉 Initial commit from Gut")
+	_, err = executor.Commit(wd, "🎉 Initial commit from Gut", nil)
 	if err != nil {
 		exitOnError("Oups, something went wrong while creating the first commit", err)
 	}
