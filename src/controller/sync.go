@@ -34,7 +34,7 @@ func Sync(cmd *cobra.Command, args []string) {
 		exitOnError("Sorry, I can't check if there are uncommited changes 😢", err)
 	}
 	if !clean {
-		exitOnError("Uh oh, there are uncommited changes. Please commit them before syncing with `gut save`", nil)
+		exitOnKnownError(errorWorkingTreeNotClean, nil)
 	}
 
 	// Get the remote

@@ -27,7 +27,7 @@ func Merge(cmd *cobra.Command, args []string) {
 		exitOnError("Sorry, I can't check if the working directory is clean 😢", err)
 	}
 	if !clean {
-		exitOnError("Uh oh, there are uncommitted changes. Please commit them before merging branches 😢", nil)
+		exitOnKnownError(errorWorkingTreeNotClean, nil)
 
 	}
 
