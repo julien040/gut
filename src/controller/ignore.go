@@ -181,6 +181,10 @@ func Ignore(cmd *cobra.Command, args []string) {
 	}
 	template := selectGitignoreTemplate(templates)
 	gitignoreTemplateContent := splitStringByNewLine(template.contents)
+
+	// Add .gut to the gitignore template
+	gitignoreTemplateContent = append(gitignoreTemplateContent, ".gut")
+
 	// Get the difference between the local .gitignore and the gitignore template
 	diff := Difference(gitignoreContent, gitignoreTemplateContent)
 	// Append the difference to the local .gitignore
