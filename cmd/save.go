@@ -29,11 +29,15 @@ import (
 
 // saveCmd represents the save command
 var saveCmd = &cobra.Command{
-	Use:   "save [files...]",
+	Use:   "save [-e=[editor]] [-m=message] [-t=title] [files...]",
 	Short: "Save (commit) your current work locally",
 	Long: `Save (commit) your current work locally
 To commit only some files, pass them as arguments to the command.
-In case no files are passed as arguments, all files will be committed.`,
+In case no files are passed as arguments, all files will be committed.
+
+The -e flag allows you to specify the editor to use for writing the commit message.
+If you want to use the default Git editor, you can also use the -e flag without any argument (e.g., git save -e).
+To specify the editor, use the -e flag followed by the editor command (e.g. gut save -e="mate -w")`,
 	Aliases: []string{"s", "commit"},
 	Run:     controller.Save,
 }
@@ -42,5 +46,13 @@ func init() {
 	rootCmd.AddCommand(saveCmd)
 	saveCmd.Flags().StringP("message", "m", "", "The commit message")
 	saveCmd.Flags().StringP("title", "t", "", "The title of the commit")
+
+	// https://github.com/spf13/pflag#setting-no-option-default-values-for-flags
+	// To set the default value of a flag to an empty string, use the NoOptDefVal field.
+	// -e return config
+	// -e "mate -w" return mate -w
+	// no flag return none
+	saveCmd.Flags().StringP("editor", "e", "none", "The editor to use to write the commit message. Set -e to use the default git editor or specify one with -e=\"editor\"")
+	saveCmd.Flag("editor").NoOptDefVal = "config"
 
 }
