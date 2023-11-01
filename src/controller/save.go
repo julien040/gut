@@ -135,11 +135,21 @@ func Save(cmd *cobra.Command, args []string) {
 	// Get the flag from the cmd
 	title := cmd.Flag("title").Value.String()
 	message := cmd.Flag("message").Value.String()
+	editor := cmd.Flag("editor").Value.String()
 
-	commitMessage := promptCommitMessage(title, message)
+	var commitMessage string
+	sp := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
+
+	if editor == "none" {
+		commitMessage = promptCommitMessage(title, message)
+	} else {
+		sp.Suffix = " I'm waiting for you to write your commit message... 🥱"
+		sp.Start()
+		commitMessage = promptCommitMessageWithEditor(editor, wd)
+		sp.Stop()
+	}
 
 	// Launch the spinner
-	sp := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
 	sp.Suffix = " I'm committing your changes..."
 	sp.Start()
 
@@ -197,6 +207,28 @@ func promptCommitMessage(title string, message string) string {
 
 	return computeCommitMessage(answers)
 
+}
+
+func promptCommitMessageWithEditor(editor string, wd string) string {
+	var err error
+
+	// We get the editor from the config if the user didn't specify one
+	if editor == "config" {
+		editor, err = executor.GetConfigEditor()
+		if err != nil {
+			if err.Error() == "flag not found" {
+				exitOnError("I can't find any editor in your config. Please specify one with the --editor flag or with the command 'git config --global core.editor <editor>'", nil)
+			}
+			exitOnError("Sorry, I can't get your editor", err)
+		}
+	}
+
+	message, err := executor.EditorGetText(editor, "", wd, "/.git/COMMIT_EDITMSG")
+	if err != nil {
+		exitOnError("Sorry, I can't get your commit message", err)
+	}
+
+	return message
 }
 
 func emojiList() []string {

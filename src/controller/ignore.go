@@ -181,6 +181,10 @@ func Ignore(cmd *cobra.Command, args []string) {
 	}
 	template := selectGitignoreTemplate(templates)
 	gitignoreTemplateContent := splitStringByNewLine(template.contents)
+
+	// Add .gut to the gitignore template
+	gitignoreTemplateContent = append(gitignoreTemplateContent, ".gut")
+
 	// Get the difference between the local .gitignore and the gitignore template
 	diff := Difference(gitignoreContent, gitignoreTemplateContent)
 	// Append the difference to the local .gitignore
@@ -232,4 +236,31 @@ func IgnoreList(cmd *cobra.Command, args []string) {
 	temp := selectGitignoreTemplate(templates)
 	print.Message("Here's the content of the "+temp.name+" template:", print.Info)
 	fmt.Println(temp.contents)
+}
+
+func IgnoreUpdate(cmd *cobra.Command, args []string) {
+	wd, err := os.Getwd()
+	if err != nil {
+		exitOnError("Sorry, I can't get your current working directory 😓", err)
+	}
+
+	// Check if a repo is initialized & git is installed
+	checkIfGitRepoInitialized(wd)
+	checkIfGitInstalled()
+
+	res, err := prompt.InputBool("Do you want to start untracking the files in the .gitignore that were previously tracked by git?", true)
+	if err != nil {
+		exitOnKnownError(errorReadInput, err)
+	}
+
+	if res {
+		err := executor.GitRmCached()
+		if err != nil {
+			exitOnError("Sorry, I couldn't untrack the files 😓", err)
+		} else {
+			print.Message("I've untracked the files for you 🎉", print.Success)
+		}
+
+	}
+
 }

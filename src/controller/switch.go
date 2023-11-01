@@ -58,7 +58,7 @@ func Switch(cmd *cobra.Command, args []string) {
 			}
 			// If not clean, we return an error
 			if !clean {
-				exitOnError("Sorry, you have uncommitted changes. Save them with \"gut save\" before going to another commit or you will lose them", nil)
+				exitOnKnownError(errorWorkingTreeNotClean, nil)
 			}
 
 			// Switch to the commit

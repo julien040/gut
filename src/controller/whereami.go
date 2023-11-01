@@ -37,10 +37,10 @@ func WhereAmI(cmd *cobra.Command, args []string) {
 		exitOnError("Sorry, I can't check if the HEAD is detached 😢", err)
 	}
 	if detached {
-		fmt.Printf("HEAD is detached (lookout mode) at %s\n", color.HiGreenString(hash))
+		fmt.Fprintf(color.Output, "HEAD is detached (lookout mode) at %s\n", color.HiGreenString(hash))
 		return
 	}
 
-	fmt.Printf("HEAD is at %s on branch %s\n", color.HiGreenString(hash), color.HiGreenString(branch))
+	fmt.Fprintf(color.Output, "HEAD is at %s on branch %s\n", color.HiGreenString(hash), color.HiGreenString(branch))
 
 }

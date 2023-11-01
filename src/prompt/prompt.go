@@ -7,13 +7,14 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/fatih/color"
 	"github.com/julien040/gut/src/print"
 	"github.com/manifoldco/promptui"
 )
 
 // InputLine prompts the user for an input and returns it
 func InputLine(message string) (string, error) {
-	fmt.Printf("%s ", message)
+	fmt.Fprintf(color.Output, "%s ", message)
 	reader := bufio.NewReader(os.Stdin)
 	input, err := reader.ReadString('\n')
 	if err != nil {

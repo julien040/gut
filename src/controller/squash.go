@@ -87,6 +87,12 @@ func Squash(cmd *cobra.Command, args []string) {
 		os.Exit(0)
 	}
 
+	// If no commit has been pushed, we set the index to the length of the commits
+	// So the user can squash all his commits
+	if indexLatestCommitPushed == -1 {
+		indexLatestCommitPushed = len(commits)
+	}
+
 	// The object.Commit to squash
 	// Gut will soft reset to this commit
 	// And amend it with a new commit and a new message

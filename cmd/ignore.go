@@ -49,7 +49,22 @@ var listTemplatesCmd = &cobra.Command{
 	Aliases: []string{"ls"},
 }
 
+var updateIgnoreCmd = &cobra.Command{
+	Use:   "update",
+	Short: "Start ignoring previously committed files",
+	Long: `Start ignoring previously committed files
+Sometimes, you may want to stop tracking files that were previously committed.
+However if you just add them to your .gitignore, they will still be tracked.
+To untrack the files that are already being tracked by Git and listed in your .gitignore, you can run this command.
+
+If you want to add a template to your .gitignore, use the command 'gut ignore'.
+`,
+	Run:     controller.IgnoreUpdate,
+	Aliases: []string{"up", "untrack", "fix"},
+}
+
 func init() {
 	rootCmd.AddCommand(ignoreCmd)
 	ignoreCmd.AddCommand(listTemplatesCmd)
+	ignoreCmd.AddCommand(updateIgnoreCmd)
 }

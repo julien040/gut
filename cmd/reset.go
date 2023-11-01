@@ -22,26 +22,21 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/julien040/gut/src/controller"
 	"github.com/spf13/cobra"
 )
 
 // undoCmd represents the undo command
-var undoCmd = &cobra.Command{
-	Use:   "undo [file]...",
+var resetCmd = &cobra.Command{
+	Use:   "reset [file]...",
 	Short: "Rollback files specified to the last commit (require git)",
 	Long: `Rollback the repository to the last commit. If you have uncommitted changes, they will be lost.
 If zero arguments are passed, all the files will be rolled back.
 If one or more arguments are passed, only the files passed as arguments will be rolled back.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Starting from v.1.0.0, the undo command is deprecated. Please use the reset command instead.")
-		controller.Undo(cmd, args)
-	},
+	Run: controller.Undo,
 }
 
 func init() {
-	rootCmd.AddCommand(undoCmd)
+	rootCmd.AddCommand(resetCmd)
 
 }

@@ -35,7 +35,7 @@ func Status(cmd *cobra.Command, args []string) {
 		if err != nil {
 			exitOnError("Sorry, I can't get the current branch 😢", err)
 		}
-		fmt.Printf("On branch %s\n", color.HiGreenString(branch))
+		fmt.Fprintf(color.Output, "On branch %s\n", color.HiGreenString(branch))
 	}
 
 	spinner := spinner.New(spinner.CharSets[9], 100*time.Millisecond)

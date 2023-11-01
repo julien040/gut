@@ -70,7 +70,7 @@ func Clone(cmd *cobra.Command, args []string) {
 	}
 
 	/* --------------------------------- Clone repo ------------------------------ */
-	fmt.Printf("\nYour repo is %s and will be cloned in %s", color.GreenString(repo), color.BlueString(path))
+	fmt.Fprintf(color.Output, "\nYour repo is %s and will be cloned in %s", color.GreenString(repo), color.BlueString(path))
 	s := spinner.New(spinner.CharSets[9], 100*time.Millisecond) // Build a new spinner
 	s.Start()
 	err = executor.Clone(repo, path, shouldConserveGitHistory)

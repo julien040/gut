@@ -16,7 +16,7 @@ var (
 		Err:     errors.New("error reading input"),
 	}
 	errorWorkingTreeNotClean = GutError{
-		Message: "I can't continue further because the working tree is not clean",
+		Message: "I can't continue further because the working tree is not clean. Commit your changes with gut save",
 		Code:    2,
 		Err:     errors.New("working tree not clean"),
 	}
@@ -56,17 +56,21 @@ func getLinkForError(GutError GutError) string {
 //
 // This should be used when the error is known and can be resolved by the user
 func exitOnKnownError(typeOfError GutError, err error) {
+
+	// When the error is linked to the user input, we don't print the error message
+	// because it's not useful
+	if typeOfError.Code == 1 {
+		os.Exit(1)
+		return
+	}
 	// Print the error message to stderr
 	fmt.Fprintln(os.Stderr, "")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, color.RedString("%s (error: %s)\n"), color.RedString(typeOfError.Message), color.RedString(err.Error()))
-		/* print.Message("%s (error: %s)", print.Error, typeOfError.Message, err.Error()) */
 	} else {
 		fmt.Fprintf(os.Stderr, "%s\n", color.RedString(typeOfError.Message))
-		/* print.Message("%s", print.Error, typeOfError.Message) */
 	}
 	fmt.Fprintf(os.Stderr, "To resolve this issue, please follow the instructions on this page: %s\n", getLinkForError(typeOfError))
-	/* print.Message("To resolve this issue, please follow the instructions on this page: %s", print.Optional, getLinkForError(typeOfError)) */
 
 	os.Exit(1)
 }
