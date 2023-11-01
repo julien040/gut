@@ -269,11 +269,11 @@ func selectProfile(gitURL string, createPossible bool) profile.Profile {
 func Profiles(cmd *cobra.Command, args []string) {
 	print.Message("Print info about the profiles \n", print.Info)
 	profileSelected := selectProfile("", true)
-	fmt.Printf(color.HiBlackString("Profile selected: %s \n"), color.HiBlueString(profileSelected.Alias))
-	fmt.Printf(color.HiBlackString("Email: %s \n"), color.HiBlueString(profileSelected.Email))
-	fmt.Printf(color.HiBlackString("Username: %s \n"), color.HiBlueString(profileSelected.Username))
-	fmt.Printf(color.HiBlackString("Website: %s \n"), color.HiBlueString(profileSelected.Website))
-	fmt.Printf(color.HiBlackString("Internal ID: %s \n"), color.HiBlueString(profileSelected.Id))
+	fmt.Fprintf(color.Output, color.HiBlackString("Profile selected: %s \n"), color.HiBlueString(profileSelected.Alias))
+	fmt.Fprintf(color.Output, color.HiBlackString("Email: %s \n"), color.HiBlueString(profileSelected.Email))
+	fmt.Fprintf(color.Output, color.HiBlackString("Username: %s \n"), color.HiBlueString(profileSelected.Username))
+	fmt.Fprintf(color.Output, color.HiBlackString("Website: %s \n"), color.HiBlueString(profileSelected.Website))
+	fmt.Fprintf(color.Output, color.HiBlackString("Internal ID: %s \n"), color.HiBlueString(profileSelected.Id))
 
 }
 
@@ -290,9 +290,9 @@ func ProfilesList(cmd *cobra.Command, args []string) {
 		return
 	} else {
 
-		fmt.Println(color.HiBlackString("ID | Alias | Username | Website | Email"))
+		fmt.Fprintln(color.Output, color.HiBlackString("ID | Alias | Username | Website | Email"))
 		for key, val := range *profiles {
-			fmt.Printf(color.HiBlackString("%d. %s | %s | %s | %s | %s \n"), key, val.Id, color.HiBlueString(val.Alias), color.HiBlueString(val.Username), color.HiBlueString(val.Website), color.HiBlueString(val.Email))
+			fmt.Fprintf(color.Output, color.HiBlackString("%d. %s | %s | %s | %s | %s \n"), key, val.Id, color.HiBlueString(val.Alias), color.HiBlueString(val.Username), color.HiBlueString(val.Website), color.HiBlueString(val.Email))
 		}
 	}
 }

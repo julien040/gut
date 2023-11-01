@@ -9,6 +9,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/fatih/color"
 )
 
 func Test_getAbsPathFromInput(t *testing.T) {
@@ -107,7 +109,7 @@ func Test_checkIfPathExist(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := checkIfPathExist(tt.args.path); got != tt.want {
-				fmt.Printf("Path: %s", tt.args.path)
+				fmt.Fprintf(color.Output, "Path: %s", tt.args.path)
 				t.Errorf("checkIfPathExist() = %v, want %v", got, tt.want)
 			}
 		})

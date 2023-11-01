@@ -92,7 +92,7 @@ func Revert(cmd *cobra.Command, args []string) {
 
 	// Prompt the user to choose a commit
 	commit := chooseCommit(commits)
-	fmt.Printf("I will revert the commit to %s created by %s on %s \n\n", color.HiCyanString(getTitleFromCommit(commit.Message)), color.HiCyanString(commit.Author.Name), commit.Author.When.Format("Mon Jan 2 15:04:05 2006"))
+	fmt.Fprintf(color.Output, "I will revert the commit to %s created by %s on %s \n\n", color.HiCyanString(getTitleFromCommit(commit.Message)), color.HiCyanString(commit.Author.Name), commit.Author.When.Format("Mon Jan 2 15:04:05 2006"))
 
 	err = executor.GitRevert(commit.Hash.String())
 	if err != nil {
