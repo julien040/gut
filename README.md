@@ -123,7 +123,7 @@ sudo yum install gut
 
 ### AUR (Arch Linux)
 
-**Note:** The AUR packages is not maintained by me. If you have any issues with it, please contact the maintainer of the package.
+**Note:** The AUR packages are not maintained by me. If you have any issues with them, please contact the maintainer of the package.
 
 #### Compile yourself
 
