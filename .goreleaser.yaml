@@ -1,5 +1,8 @@
 # This is an example .goreleaser.yml file with some sensible defaults.
 # Make sure to check the documentation at https://goreleaser.com
+
+version: 2
+
 before:
   hooks:
     # You may remove this if you don't use go modules.
@@ -71,7 +74,8 @@ snapcrafts:
 #    api_key: "{{ .Env.CHOCOLATEY_API_KEY }}"
 
 brews:
-  - tap:
+  - name: gut
+    repository:
       owner: julien040
       name: gut-tap
     commit_author:
@@ -83,13 +87,14 @@ brews:
     dependencies:
       - git
 
-scoop:
-  bucket:
-    owner: julien040
-    name: gut-scoop
-  homepage: https://gut-cli.dev
-  description: Gut is an easy to use Git client for the command line.
-  license: MIT
+scoops:
+  - name: gut
+    repository:
+      owner: julien040
+      name: gut-scoop
+    homepage: https://gut-cli.dev
+    description: Gut is an easy to use Git client for the command line.
+    license: MIT
 
 
 release:
