@@ -25,8 +25,6 @@ import (
 	"os"
 
 	"github.com/julien040/gut/src/controller"
-	"github.com/julien040/gut/src/prompt"
-	"github.com/julien040/gut/src/telemetry"
 	"github.com/spf13/cobra"
 )
 
@@ -42,35 +40,12 @@ var rootCmd = &cobra.Command{
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-
-	// Prompt for telemetry consent
-	promptForTelemetry()
-
 	// Run the command called by the user
 	err := rootCmd.Execute()
-
-	// Log the command called by the user
-	if len(os.Args) > 1 {
-		telemetry.LogCommand(os.Args[1])
-	} else {
-		telemetry.LogCommand("gut")
-	}
 
 	// Exit with error code 1 if an error occured
 	if err != nil {
 		os.Exit(1)
-	}
-
-}
-
-func promptForTelemetry() {
-	consentStateKnown := telemetry.IsConsentStateKnown()
-	if !consentStateKnown {
-		res, err := prompt.InputBool("Do you want to help us improve gut by sending anonymous usage data?", true)
-		if err != nil {
-			return
-		}
-		telemetry.SetConsentState(res)
 	}
 
 }
