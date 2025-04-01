@@ -1,9 +1,5 @@
 # Gut
 
-> ⚠️ Gut is still in alpha which means that there may be some features that are missing
->
-> **To read about the [future of Gut](/future_of_gut.md), check [this blog post](/future_of_gut.md)**
-
 Gut is an alternative CLI for Git. It provides a consistent naming of commands and a useful set of features.
 
 If you have years of muscle memory, gut is probably not for you.
@@ -79,6 +75,7 @@ gut sync
 - `gut ignore` - Downloads templates of `.gitignore`
 - `gut whereami` - Shows where your HEAD points to (no more `rev-parse`)
 - `gut switch` - Creates a new branch or switches to an existing one
+- `gut attributes` - Downloads templates of `.gitattributes`
 
 ## Installation
 
