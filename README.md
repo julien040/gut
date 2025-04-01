@@ -93,7 +93,7 @@ scoop install gut/gut
 To install gut on macOS, open the Terminal and run
 
 ```bash
-brew tap julien040/gut && brew install gut
+brew install gut
 ```
 
 ### Apt-get
