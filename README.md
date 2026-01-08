@@ -106,6 +106,8 @@ sudo apt-get install gut
 
 ### Yum
 
+Nobara Linux is not supported (see [issue #68](https://github.com/julien040/gut/issues/68))
+
 ```bash
 sudo tee /etc/yum.repos.d/gut.repo <<EOF
 [gut]
