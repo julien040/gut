@@ -28,7 +28,11 @@ func Undo(cmd *cobra.Command, args []string) {
 	checkIfGitInstalled()
 
 	if len(args) == 0 {
-		res, err := prompt.InputBool("This will revert your working tree back to the state of the last commit. Any changes you made after the last commit will be lost. Are you sure you want to continue?", false)
+		res, err := prompt.InputBool(
+			`This will revert your working tree back to the state of the last commit.
+Any changes you made after the last commit will be lost. Are you sure you want to continue?`,
+			false,
+		)
 		if err != nil {
 			exitOnKnownError(errorReadInput, err)
 		}
@@ -81,5 +85,4 @@ func Undo(cmd *cobra.Command, args []string) {
 		return
 
 	}
-
 }
